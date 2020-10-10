@@ -1,2 +1,2 @@
 # beertech.bancobeer
-Legacy POC for Becks group
+Legacy POC for Becks group - Individual challenge
