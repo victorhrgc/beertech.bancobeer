@@ -1,16 +1,13 @@
 package beertech.becks.api.service;
 
-import beertech.becks.api.entities.Balance;
-import beertech.becks.api.entities.Transaction;
-import beertech.becks.api.tos.TransactionRequestTO;
-
-import java.math.BigDecimal;
-import java.util.List;
+import beertech.becks.api.exception.account.AccountDoesNotExistsException;
+import beertech.becks.api.tos.response.BalanceResponseTO;
+import beertech.becks.api.tos.request.TransactionRequestTO;
 
 public interface TransactionService {
 
-    Transaction createTransaction(TransactionRequestTO transactionTO);
+	void createTransaction(TransactionRequestTO transactionTO) throws AccountDoesNotExistsException;
 
-    Balance getBalance();
+	BalanceResponseTO getBalance(String accountCode) throws AccountDoesNotExistsException;
 
 }

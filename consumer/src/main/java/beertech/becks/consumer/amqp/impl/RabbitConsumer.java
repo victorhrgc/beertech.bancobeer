@@ -18,7 +18,7 @@ public class RabbitConsumer implements AmqpConsumer<Message> {
 	/**
 	 * Logger
 	 */
-	private static final Logger LOGGER = Logger.getLogger(ConsumerServiceImpl.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(RabbitConsumer.class.getName());
 
 	/**
 	 * The consumer services

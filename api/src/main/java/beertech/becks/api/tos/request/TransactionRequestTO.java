@@ -1,18 +1,15 @@
-package beertech.becks.consumer.tos;
+package beertech.becks.api.tos.request;
+
+import java.math.BigDecimal;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
-/**
- * Represents the json sent by the rabbit queue
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Message {
+public class TransactionRequestTO {
 	/**
 	 * The operation type (D || S || T)
 	 */
@@ -24,8 +21,7 @@ public class Message {
 	private BigDecimal value;
 
 	/**
-	 * Indicates the unique code of the account that is the sender of this
-	 * transaction
+	 * Indicates the unique code of the account that originates this transaction
 	 */
 	private String originAccountCode;
 

@@ -1,4 +1,4 @@
-package beertech.becks.api.entities;
+package beertech.becks.api.tos.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +9,6 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Balance {
+public class BalanceResponseTO {
 	private BigDecimal balance;
 }

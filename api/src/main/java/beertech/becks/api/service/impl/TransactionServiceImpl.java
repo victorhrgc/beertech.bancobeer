@@ -1,54 +1,126 @@
 package beertech.becks.api.service.impl;
 
-import beertech.becks.api.entities.Balance;
+import beertech.becks.api.exception.account.AccountDoesNotExistsException;
+import beertech.becks.api.model.TypeOperation;
+import beertech.becks.api.repositories.AccountRepository;
+import beertech.becks.api.tos.response.BalanceResponseTO;
 import beertech.becks.api.entities.Transaction;
 import beertech.becks.api.repositories.TransactionRepository;
 import beertech.becks.api.service.TransactionService;
-import beertech.becks.api.tos.TransactionRequestTO;
+import beertech.becks.api.tos.request.TransactionRequestTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
-import static beertech.becks.api.model.TypeOperation.DEPOSITO;
-import static beertech.becks.api.model.TypeOperation.SAQUE;
+import static beertech.becks.api.model.TypeOperation.*;
 import static java.time.ZonedDateTime.now;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
-    private TransactionRepository transactionRepository;
+	@Autowired
+	private TransactionRepository transactionRepository;
 
-    @Autowired
-    public TransactionServiceImpl(TransactionRepository transactionRepository) {
-        this.transactionRepository = transactionRepository;
-    }
+	@Autowired
+	private AccountRepository accountRepository;
 
 	@Override
-	public Transaction createTransaction(TransactionRequestTO transactionTO) {
+	public void createTransaction(TransactionRequestTO transactionTO) throws AccountDoesNotExistsException {
+		validateAccounts(transactionTO.getOriginAccountCode(), transactionTO.getDestinationAccountCode());
+
+		if (TRANSFERENCIA.getDescription().equals(transactionTO.getOperation())) {
+			createTransferTransaction(transactionTO);
+		} else {
+			createSelfTransaction(transactionTO);
+		}
+	}
+
+	@Override
+	public BalanceResponseTO getBalance(String accountCode) throws AccountDoesNotExistsException {
+		validateAccounts(accountCode, null);
+		BalanceResponseTO balance = new BalanceResponseTO();
+
+		accountRepository.findByCode(accountCode)
+				.ifPresent(account -> balance.setBalance(transactionRepository.findByAccountId(account.getId()).stream()
+						.map(Transaction::getValueTransaction).reduce(BigDecimal.ZERO, BigDecimal::add)));
+
+		return balance;
+	}
+
+	/**
+	 * This method validates if the informed accounts on this transaction exist
+	 * 
+	 * @param originAccountCode      the code of the origin account
+	 * @param destinationAccountCode the code of the destination account
+	 * @throws AccountDoesNotExistsException when an informed account is not found
+	 *                                       on the database
+	 */
+	private void validateAccounts(String originAccountCode, String destinationAccountCode)
+			throws AccountDoesNotExistsException {
+		if (!accountRepository.existsByCode(originAccountCode)) {
+			throw new AccountDoesNotExistsException("Conta com código " + originAccountCode + " não existe");
+		}
+
+		if (destinationAccountCode != null && !destinationAccountCode.isEmpty()
+				&& !accountRepository.existsByCode(destinationAccountCode)) {
+			throw new AccountDoesNotExistsException("Conta com código " + destinationAccountCode + " não existe");
+		}
+	}
+
+	/**
+	 * Creates a transfer transaction
+	 *
+	 * @param transactionTO the transaction to
+	 */
+	private void createTransferTransaction(TransactionRequestTO transactionTO) {
+		List<Transaction> transactionsToSave = new ArrayList<>();
+		Transaction debitTransaction = new Transaction();
+		debitTransaction.setTypeOperation(TRANSFERENCIA);
+		debitTransaction.setValueTransaction(transactionTO.getValue().negate());
+		debitTransaction.setDateTime(now());
+		accountRepository.findByCode(transactionTO.getOriginAccountCode())
+				.ifPresent(account -> debitTransaction.setAccountId(account.getId()));
+		transactionsToSave.add(debitTransaction);
+
+		Transaction creditTransaction = new Transaction();
+		creditTransaction.setTypeOperation(TRANSFERENCIA);
+		creditTransaction.setValueTransaction(transactionTO.getValue());
+		creditTransaction.setDateTime(now());
+		accountRepository.findByCode(transactionTO.getDestinationAccountCode())
+				.ifPresent(account -> creditTransaction.setAccountId(account.getId()));
+		transactionsToSave.add(creditTransaction);
+
+		transactionRepository.saveAll(transactionsToSave);
+	}
+
+	/**
+	 * Creates a transaction in a single account
+	 *
+	 * @param transactionTO the transaction to
+	 */
+	private void createSelfTransaction(TransactionRequestTO transactionTO) {
 		Transaction transaction = new Transaction();
 
 		if (SAQUE.getDescription().equals(transactionTO.getOperation())) {
-			transaction.setValueTransaction(transactionTO.getValue().negate());
 			transaction.setTypeOperation(SAQUE);
 		} else {
-			transaction.setValueTransaction(transactionTO.getValue());
 			transaction.setTypeOperation(DEPOSITO);
 		}
 
 		transaction.setDateTime(now());
+		accountRepository.findByCode(transactionTO.getOriginAccountCode())
+				.ifPresent(account -> transaction.setAccountId(account.getId()));
 
-		return transactionRepository.save(transaction);
-	}
+		if (SAQUE.getDescription().equals(transactionTO.getOperation())) {
+			transaction.setValueTransaction(transactionTO.getValue().negate());
+		} else if (DEPOSITO.getDescription().equals(transactionTO.getOperation())) {
+			transaction.setValueTransaction(transactionTO.getValue());
+		}
 
-	@Override
-	public Balance getBalance() {
-		Balance balance = new Balance();
-		BigDecimal sum = transactionRepository.findAll().stream().map(Transaction::getValueTransaction)
-				.reduce(BigDecimal.ZERO, BigDecimal::add);
-		balance.setBalance(sum);
-		return balance;
+		transactionRepository.save(transaction);
 	}
 
 }
