@@ -38,18 +38,6 @@ public class TransactionServiceImpl implements TransactionService {
 		}
 	}
 
-	@Override
-	public BalanceResponseTO getBalance(String accountCode) throws AccountDoesNotExistsException {
-		validateAccounts(accountCode, null);
-		BalanceResponseTO balance = new BalanceResponseTO();
-
-		accountRepository.findByCode(accountCode)
-				.ifPresent(account -> balance.setBalance(transactionRepository.findByAccountId(account.getId()).stream()
-						.map(Transaction::getValueTransaction).reduce(BigDecimal.ZERO, BigDecimal::add)));
-
-		return balance;
-	}
-
 	/**
 	 * This method validates if the informed accounts on this transaction exist
 	 * 
