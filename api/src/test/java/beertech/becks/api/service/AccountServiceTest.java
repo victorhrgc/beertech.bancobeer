@@ -35,7 +35,7 @@ public class AccountServiceTest {
     // Tests
 
 	@Test
-    public void shouldCreateAccountFailWhenAccountAlreadyExists() throws AccountAlreadyExistsException {
+    public void shouldCreateAccountFailWhenAccountAlreadyExists() {
         givenValidAccountRequestTO();
         givenAccountRepositoryExistsByCodeReturnsTrue();
         whenCallAccountServiceCreateAccount();

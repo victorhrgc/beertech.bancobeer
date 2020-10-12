@@ -1,22 +1,21 @@
 package beertech.becks.api.service.impl;
 
-import beertech.becks.api.exception.account.AccountDoesNotExistsException;
-import beertech.becks.api.model.TypeOperation;
-import beertech.becks.api.repositories.AccountRepository;
-import beertech.becks.api.tos.response.BalanceResponseTO;
-import beertech.becks.api.entities.Transaction;
-import beertech.becks.api.repositories.TransactionRepository;
-import beertech.becks.api.service.TransactionService;
-import beertech.becks.api.tos.request.TransactionRequestTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import static beertech.becks.api.model.TypeOperation.*;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static beertech.becks.api.model.TypeOperation.*;
-import static java.time.ZonedDateTime.now;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import beertech.becks.api.entities.Transaction;
+import beertech.becks.api.exception.account.AccountDoesNotExistsException;
+import beertech.becks.api.repositories.AccountRepository;
+import beertech.becks.api.repositories.TransactionRepository;
+import beertech.becks.api.service.TransactionService;
+import beertech.becks.api.tos.request.TransactionRequestTO;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -31,10 +30,13 @@ public class TransactionServiceImpl implements TransactionService {
 	public void createTransaction(TransactionRequestTO transactionTO) throws AccountDoesNotExistsException {
 		validateAccounts(transactionTO.getOriginAccountCode(), transactionTO.getDestinationAccountCode());
 
+		LocalDateTime transactionTime = LocalDateTime.parse(transactionTO.getTransactionTime(),
+				DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+
 		if (TRANSFERENCIA.getDescription().equals(transactionTO.getOperation())) {
-			createTransferTransaction(transactionTO);
+			createTransferTransaction(transactionTO, transactionTime);
 		} else {
-			createSelfTransaction(transactionTO);
+			createSelfTransaction(transactionTO, transactionTime);
 		}
 	}
 
@@ -61,14 +63,15 @@ public class TransactionServiceImpl implements TransactionService {
 	/**
 	 * Creates a transfer transaction
 	 *
-	 * @param transactionTO the transaction to
+	 * @param transactionTO   the transaction to
+	 * @param transactionTime the time of this transaction
 	 */
-	private void createTransferTransaction(TransactionRequestTO transactionTO) {
+	private void createTransferTransaction(TransactionRequestTO transactionTO, LocalDateTime transactionTime) {
 		List<Transaction> transactionsToSave = new ArrayList<>();
 		Transaction debitTransaction = new Transaction();
 		debitTransaction.setTypeOperation(TRANSFERENCIA);
 		debitTransaction.setValueTransaction(transactionTO.getValue().negate());
-		debitTransaction.setDateTime(now());
+		debitTransaction.setDateTime(transactionTime);
 		accountRepository.findByCode(transactionTO.getOriginAccountCode())
 				.ifPresent(account -> debitTransaction.setAccountId(account.getId()));
 		transactionsToSave.add(debitTransaction);
@@ -76,7 +79,7 @@ public class TransactionServiceImpl implements TransactionService {
 		Transaction creditTransaction = new Transaction();
 		creditTransaction.setTypeOperation(TRANSFERENCIA);
 		creditTransaction.setValueTransaction(transactionTO.getValue());
-		creditTransaction.setDateTime(now());
+		creditTransaction.setDateTime(transactionTime);
 		accountRepository.findByCode(transactionTO.getDestinationAccountCode())
 				.ifPresent(account -> creditTransaction.setAccountId(account.getId()));
 		transactionsToSave.add(creditTransaction);
@@ -87,9 +90,10 @@ public class TransactionServiceImpl implements TransactionService {
 	/**
 	 * Creates a transaction in a single account
 	 *
-	 * @param transactionTO the transaction to
+	 * @param transactionTO   the transaction to
+	 * @param transactionTime the time of this transaction
 	 */
-	private void createSelfTransaction(TransactionRequestTO transactionTO) {
+	private void createSelfTransaction(TransactionRequestTO transactionTO, LocalDateTime transactionTime) {
 		Transaction transaction = new Transaction();
 
 		if (SAQUE.getDescription().equals(transactionTO.getOperation())) {
@@ -98,7 +102,7 @@ public class TransactionServiceImpl implements TransactionService {
 			transaction.setTypeOperation(DEPOSITO);
 		}
 
-		transaction.setDateTime(now());
+		transaction.setDateTime(transactionTime);
 		accountRepository.findByCode(transactionTO.getOriginAccountCode())
 				.ifPresent(account -> transaction.setAccountId(account.getId()));
 

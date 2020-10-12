@@ -2,7 +2,7 @@ package beertech.becks.api.entities;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 import javax.persistence.*;
 
@@ -29,7 +29,7 @@ public class Transaction implements Serializable {
 	private BigDecimal valueTransaction;
 
 	@Column(name = "data_transaction")
-	private ZonedDateTime dateTime;
+	private LocalDateTime dateTime;
 
 	@Column(name = "FK_ACCOUNT_ID")
 	private Long accountId;

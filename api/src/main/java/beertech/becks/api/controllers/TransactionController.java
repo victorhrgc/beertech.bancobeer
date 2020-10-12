@@ -14,6 +14,7 @@ import beertech.becks.api.tos.response.ErrorResponseTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/transactions")
@@ -23,6 +24,7 @@ public class TransactionController {
 	@Autowired
 	private TransactionService transactionService;
 
+	@ApiIgnore
 	@ApiResponses(value = { 
 			@ApiResponse(code = 201, message = STATUS_201_CREATED),
 			@ApiResponse(code = 400, message = STATUS_400_BAD_REQUEST),

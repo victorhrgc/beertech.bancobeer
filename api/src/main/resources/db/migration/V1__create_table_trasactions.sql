@@ -1,3 +1,4 @@
+CREATE SEQUENCE IF NOT EXISTS hibernate_sequence;
 
 create table TRANSACTION (
     ID numeric not null PRIMARY KEY,

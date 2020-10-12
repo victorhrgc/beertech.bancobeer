@@ -4,6 +4,7 @@ import beertech.becks.api.entities.Transaction;
 import beertech.becks.api.model.TypeOperation;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 public final class TransactionBuilder implements Builder<Transaction> {
@@ -32,7 +33,7 @@ public final class TransactionBuilder implements Builder<Transaction> {
         return this;
     }
 
-    public TransactionBuilder withDateTime(ZonedDateTime dateTime) {
+    public TransactionBuilder withDateTime(LocalDateTime dateTime) {
         this.transaction.setDateTime(dateTime);
         return this;
     }
