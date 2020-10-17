@@ -1,4 +1,4 @@
-truncate table transactions;
+truncate table transaction;
 truncate table account;
 
 create table USER (
