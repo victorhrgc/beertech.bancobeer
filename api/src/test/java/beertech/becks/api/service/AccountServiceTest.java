@@ -1,5 +1,6 @@
 package beertech.becks.api.service;
 
+import beertech.becks.api.entities.Account;
 import beertech.becks.api.exception.account.AccountAlreadyExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
 import beertech.becks.api.repositories.AccountRepository;
@@ -11,12 +12,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.ArgumentMatchers.anyString;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class AccountServiceTest {
@@ -66,6 +71,13 @@ public class AccountServiceTest {
         thenExpectNoException();
     }
 
+    @Test
+    public void shouldListAllAccounts() {
+        givenAccountRepositoryFindAll();
+        List<Account> accountList = whenCallGetAllAccounts();
+        thenExpectNoException();
+        thenExpectListAccounts(accountList);
+    }
 
 
     // Givens
@@ -82,6 +94,11 @@ public class AccountServiceTest {
 	public void givenAccountRepositoryExistsByCodeReturnsFalse() {
 		doReturn(false).when(accountRepository).existsByCode(anyString());
 	}
+
+    public void givenAccountRepositoryFindAll() {
+	    List<Account> accountList = Arrays.asList(new Account(0L, "1", 1L), new Account(1L, "2", 2L));
+        when(accountRepository.findAll()).thenReturn(accountList);
+    }
 
 	// Whens
 	private void whenCallAccountServiceCreateAccount() {
@@ -100,6 +117,15 @@ public class AccountServiceTest {
         }
     }
 
+    private List<Account> whenCallGetAllAccounts() {
+        try {
+            return accountService.getAll();
+        } catch (Exception e) {
+            exception = e;
+        }
+        return null;
+    }
+
 	// Thens
 
 	private void thenExpectAccountAlreadyExistsException() {
@@ -114,5 +140,9 @@ public class AccountServiceTest {
         assertThat(exception).isInstanceOf(AccountDoesNotExistsException.class);
     }
 
+    private void thenExpectListAccounts(List<Account> listAccount) {
+        assertThat(listAccount).isNotNull();
+        assertEquals(listAccount.size(), 2);
+    }
 
 }
