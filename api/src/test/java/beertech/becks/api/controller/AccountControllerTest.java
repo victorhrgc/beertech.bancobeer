@@ -40,6 +40,7 @@ public class AccountControllerTest {
 	private MockMvc mockMvc;
 
 	private String accountCode;
+	private Long accountId;
 	private AccountRequestTO accountRequestTO;
 	private MockHttpServletResponse response;
 
@@ -80,16 +81,35 @@ public class AccountControllerTest {
 
 	@Test
 	public void getListAllAccounts() throws Exception {
-		givenAValidAccountCode();
-		whenCallGetListAllAccount();
+		whenCallGetListAllAccounts();
 		thenExpectOkStatus();
-		thenExpectAccountList();
+		thenExpectAccountServiceGetAllCall();
+	}
+
+	@Test
+	public void getAccountSuccessfullyWithAccountCode() throws Exception {
+		givenAValidAccountCode();
+		whenCallGetAccountByCode();
+		thenExpectOkStatus();
+		thenExpectAccountServiceGetAccountByCodeCall();
+	}
+
+	@Test
+	public void getAccountSuccessfullyWithAccountId() throws Exception {
+		givenAValidAccountId();
+		whenCallGetAccountById();
+		thenExpectOkStatus();
+		thenExpectAccountServiceGetAccountByIdCall();
 	}
 
 	// Givens
 
 	private void givenAValidAccountCode() {
 		accountCode = UUID.randomUUID().toString();
+	}
+
+	private void givenAValidAccountId() {
+		accountId = UUID.randomUUID().getMostSignificantBits();
 	}
 	
 	private void givenValidAccountRequestTO() {
@@ -116,9 +136,19 @@ public class AccountControllerTest {
 				.getResponse();
 	}
 
-	private void whenCallGetListAllAccount() throws Exception{
+	private void whenCallGetListAllAccounts() throws Exception{
 		response = mockMvc.perform(get(ACCOUNTS_ENDPOINT)).andReturn().getResponse();
 	}
+
+	private void whenCallGetAccountByCode() throws Exception {
+		response = mockMvc.perform(get(ACCOUNTS_ENDPOINT + "/code/" + accountCode )).andReturn().getResponse();
+	}
+
+	private void whenCallGetAccountById() throws Exception {
+		response = mockMvc.perform(get(ACCOUNTS_ENDPOINT + "/id/" + accountId )).andReturn().getResponse();
+	}
+
+
 
 	// Thens
 
@@ -142,13 +172,22 @@ public class AccountControllerTest {
 		verify(accountService, times(1)).createAccount(accountRequestTO);
 	}
 
-	private void thenExpectAccountList() throws AccountAlreadyExistsException {
+	private void thenExpectAccountServiceGetAllCall() throws AccountAlreadyExistsException {
 		verify(accountService, times(1)).getAll();
 	}
 
 	private void thenExpectAccountServiceCreateAccountNoCall() throws AccountAlreadyExistsException {
 		verify(accountService, times(0)).createAccount(accountRequestTO);
 	}
+
+	private void thenExpectAccountServiceGetAccountByCodeCall() throws AccountDoesNotExistsException {
+		verify(accountService, times(1)).getAccountByCode(accountCode);
+	}
+
+	private void thenExpectAccountServiceGetAccountByIdCall() throws AccountDoesNotExistsException {
+		verify(accountService, times(1)).getAccountById(accountId);
+	}
+	
 
 
 }

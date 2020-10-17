@@ -58,8 +58,30 @@ public class AccountController {
 					@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
 					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
-	@GetMapping("/listAll")
-	public ResponseEntity<Object> getAllAccount() {
+	@GetMapping
+	public ResponseEntity<Object> getAllAccounts() {
 		return new ResponseEntity<>(accountService.getAll(), HttpStatus.OK);
+	}
+
+	@ApiResponses(
+			value = {
+					@ApiResponse(code = 200, message = STATUS_200_GET_OK),
+					@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
+			})
+	@GetMapping("/id/{accountId}")
+	public ResponseEntity<Account> getAccountById(@PathVariable Long accountId) throws AccountDoesNotExistsException {
+		return new ResponseEntity<>(accountService.getAccountById(accountId), HttpStatus.OK);
+	}
+
+	@ApiResponses(
+			value = {
+					@ApiResponse(code = 200, message = STATUS_200_GET_OK),
+					@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
+			})
+	@GetMapping("/code/{accountCode}")
+	public ResponseEntity<Account> getAccountByCode(@PathVariable String accountCode) throws AccountDoesNotExistsException {
+		return new ResponseEntity<>(accountService.getAccountByCode(accountCode), HttpStatus.OK);
 	}
 }
