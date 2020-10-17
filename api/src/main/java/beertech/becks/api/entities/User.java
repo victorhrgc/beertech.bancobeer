@@ -30,4 +30,10 @@ public class User implements Serializable {
 	@Enumerated(EnumType.ORDINAL)
 	@Column(name = "ROLE")
 	private UserRoles role;
+
+	@Column(name = "PASSWORD")
+	private String password;
+
+	@Column(name = "NAME")
+	private String name;
 }
