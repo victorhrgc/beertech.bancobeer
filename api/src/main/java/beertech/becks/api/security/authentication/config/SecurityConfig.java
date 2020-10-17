@@ -2,6 +2,8 @@ package beertech.becks.api.security.authentication.config;
 
 import beertech.becks.api.security.authentication.filter.AuthenticationFilter;
 import beertech.becks.api.security.authentication.filter.LoginFilter;
+import beertech.becks.api.security.authentication.service.AuthenticationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,10 +17,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    AuthenticationService authenticationService;
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable().authorizeRequests()
-                .antMatchers("/home").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
@@ -28,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         UsernamePasswordAuthenticationFilter.class)
 
                 // filtra outras requisições para verificar a presença do JWT no header
-                .addFilterBefore(new AuthenticationFilter(),
+                .addFilterBefore(new AuthenticationFilter(authenticationService),
                         UsernamePasswordAuthenticationFilter.class);
     }
 
