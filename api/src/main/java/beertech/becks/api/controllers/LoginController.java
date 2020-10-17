@@ -3,15 +3,14 @@ package beertech.becks.api.controllers;
 import beertech.becks.api.entities.User;
 import beertech.becks.api.tos.request.LoginRequestTO;
 import beertech.becks.api.tos.response.LoginResponseTO;
-import beertech.becks.api.victorauth.service.JwtService;
-import beertech.becks.api.victorauth.service.UserService;
+import beertech.becks.api.security.service.JwtService;
+import beertech.becks.api.security.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import static beertech.becks.api.constants.Constants.*;

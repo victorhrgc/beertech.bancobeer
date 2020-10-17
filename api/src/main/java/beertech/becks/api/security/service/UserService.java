@@ -1,4 +1,4 @@
-package beertech.becks.api.victorauth.service;
+package beertech.becks.api.security.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import beertech.becks.api.entities.User;
 import beertech.becks.api.exception.user.InvalidPasswordException;
-import beertech.becks.api.model.UserRoles;
 import beertech.becks.api.repositories.UsersRepository;
 
 @Service

@@ -1,4 +1,4 @@
-package beertech.becks.api.victorauth.service;
+package beertech.becks.api.security.service;
 
 import beertech.becks.api.entities.User;
 import io.jsonwebtoken.Claims;

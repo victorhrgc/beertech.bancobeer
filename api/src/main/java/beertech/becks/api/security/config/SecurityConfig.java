@@ -1,8 +1,8 @@
-package beertech.becks.api.victorauth.config;
+package beertech.becks.api.security.config;
 
-import beertech.becks.api.victorauth.filter.JwtAuthFilter;
-import beertech.becks.api.victorauth.service.JwtService;
-import beertech.becks.api.victorauth.service.UserService;
+import beertech.becks.api.security.filter.JwtAuthFilter;
+import beertech.becks.api.security.service.JwtService;
+import beertech.becks.api.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
