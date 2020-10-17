@@ -1,19 +1,19 @@
 package beertech.becks.api.service.impl;
 
+import java.math.BigDecimal;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import beertech.becks.api.entities.Account;
 import beertech.becks.api.entities.Transaction;
 import beertech.becks.api.exception.account.AccountAlreadyExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
-import beertech.becks.api.repositories.TransactionRepository;
-import beertech.becks.api.tos.response.BalanceResponseTO;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import beertech.becks.api.entities.Account;
 import beertech.becks.api.repositories.AccountRepository;
+import beertech.becks.api.repositories.TransactionRepository;
 import beertech.becks.api.service.AccountService;
 import beertech.becks.api.tos.request.AccountRequestTO;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
+import beertech.becks.api.tos.response.BalanceResponseTO;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -27,7 +27,7 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Account createAccount(AccountRequestTO accountRequestTO) throws AccountAlreadyExistsException {
 		if (accountRepository.existsByCode(accountRequestTO.getCode())) {
-			throw new AccountAlreadyExistsException("Conta já cadastrada");
+			throw new AccountAlreadyExistsException(accountRequestTO.getCode());
 		}
 
 		Account account = new Account();
@@ -37,7 +37,10 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public BalanceResponseTO getBalance(String accountCode) throws AccountDoesNotExistsException {
-		validateAccounts(accountCode, null);
+		if (!accountRepository.existsByCode(accountCode)) {
+			throw new AccountDoesNotExistsException(accountCode);
+		}
+
 		BalanceResponseTO balance = new BalanceResponseTO();
 
 		accountRepository.findByCode(accountCode)
@@ -47,23 +50,4 @@ public class AccountServiceImpl implements AccountService {
 		return balance;
 	}
 
-	/**
-	 * This method validates if the informed accounts on this transaction exist
-	 *
-	 * @param originAccountCode      the code of the origin account
-	 * @param destinationAccountCode the code of the destination account
-	 * @throws AccountDoesNotExistsException when an informed account is not found
-	 *                                       on the database
-	 */
-	private void validateAccounts(String originAccountCode, String destinationAccountCode)
-			throws AccountDoesNotExistsException {
-		if (!accountRepository.existsByCode(originAccountCode)) {
-			throw new AccountDoesNotExistsException("Conta com código " + originAccountCode + " não existe");
-		}
-
-		if (destinationAccountCode != null && !destinationAccountCode.isEmpty()
-				&& !accountRepository.existsByCode(destinationAccountCode)) {
-			throw new AccountDoesNotExistsException("Conta com código " + destinationAccountCode + " não existe");
-		}
-	}
 }

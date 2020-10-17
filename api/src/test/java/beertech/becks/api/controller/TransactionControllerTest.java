@@ -2,6 +2,7 @@ package beertech.becks.api.controller;
 
 import beertech.becks.api.controllers.TransactionController;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
+import beertech.becks.api.exception.transaction.InvalidTransactionOperationException;
 import beertech.becks.api.model.TypeOperation;
 import beertech.becks.api.service.TransactionService;
 import beertech.becks.api.tos.request.TransactionRequestTO;
@@ -108,11 +109,11 @@ class TransactionControllerTest {
   }
 
   private void thenExpectTransactionServiceCreateTransactionCall()
-      throws AccountDoesNotExistsException {
+          throws AccountDoesNotExistsException, InvalidTransactionOperationException {
     verify(transactionService, times(1)).createTransaction(requestTO);
   }
 
-  private void thenExpectTransactionServiceCreateTransactionNoCall() throws AccountDoesNotExistsException {
+  private void thenExpectTransactionServiceCreateTransactionNoCall() throws AccountDoesNotExistsException, InvalidTransactionOperationException {
     verify(transactionService, times(0)).createTransaction(requestTO);
   }
 

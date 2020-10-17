@@ -8,10 +8,12 @@ import javax.persistence.*;
 
 import beertech.becks.api.model.TypeOperation;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -31,6 +33,7 @@ public class Transaction implements Serializable {
 	@Column(name = "data_transaction")
 	private LocalDateTime dateTime;
 
+	// TODO talvez adicionar manytoone?
 	@Column(name = "FK_ACCOUNT_ID")
 	private Long accountId;
 }

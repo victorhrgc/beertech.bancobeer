@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitConfiguration {
 
+	//TODO fazer criar a fila automaticamente
+
 	/**
 	 * The jackson converter to convert json messages into objects
 	 * 

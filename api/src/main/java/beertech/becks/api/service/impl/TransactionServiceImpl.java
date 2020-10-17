@@ -5,17 +5,21 @@ import static beertech.becks.api.model.TypeOperation.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import beertech.becks.api.model.TypeOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import beertech.becks.api.entities.Transaction;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
+import beertech.becks.api.exception.transaction.InvalidTransactionOperationException;
 import beertech.becks.api.repositories.AccountRepository;
 import beertech.becks.api.repositories.TransactionRepository;
 import beertech.becks.api.service.TransactionService;
 import beertech.becks.api.tos.request.TransactionRequestTO;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -27,8 +31,14 @@ public class TransactionServiceImpl implements TransactionService {
 	private AccountRepository accountRepository;
 
 	@Override
-	public void createTransaction(TransactionRequestTO transactionTO) throws AccountDoesNotExistsException {
-		validateAccounts(transactionTO.getOriginAccountCode(), transactionTO.getDestinationAccountCode());
+	public void createTransaction(TransactionRequestTO transactionTO)
+			throws AccountDoesNotExistsException, InvalidTransactionOperationException {
+
+		// TODO verificar se tem como fazer isso de uma maneira melhor
+		transactionTO.setOperation(transactionTO.getOperation().toUpperCase());
+
+		validateTransaction(transactionTO.getOriginAccountCode(), transactionTO.getDestinationAccountCode(),
+				transactionTO.getOperation());
 
 		LocalDateTime transactionTime = LocalDateTime.parse(transactionTO.getTransactionTime(),
 				DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
@@ -41,22 +51,35 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	/**
-	 * This method validates if the informed accounts on this transaction exist
+	 * This method validates the transaction
 	 * 
 	 * @param originAccountCode      the code of the origin account
 	 * @param destinationAccountCode the code of the destination account
-	 * @throws AccountDoesNotExistsException when an informed account is not found
-	 *                                       on the database
+	 * @param operation              the operation of this transaction
+	 * @throws AccountDoesNotExistsException        when an informed account is not
+	 *                                              found on the database
+	 * @throws InvalidTransactionOperationException when the informed operation does
+	 *                                              not exist
 	 */
-	private void validateAccounts(String originAccountCode, String destinationAccountCode)
-			throws AccountDoesNotExistsException {
-		if (!accountRepository.existsByCode(originAccountCode)) {
-			throw new AccountDoesNotExistsException("Conta com código " + originAccountCode + " não existe");
+	private void validateTransaction(String originAccountCode, String destinationAccountCode, String operation)
+			throws AccountDoesNotExistsException, InvalidTransactionOperationException {
+
+		if (Arrays.stream(values()).noneMatch(op -> op.getDescription().equals(operation))) {
+			throw new InvalidTransactionOperationException(operation);
 		}
 
-		if (destinationAccountCode != null && !destinationAccountCode.isEmpty()
-				&& !accountRepository.existsByCode(destinationAccountCode)) {
-			throw new AccountDoesNotExistsException("Conta com código " + destinationAccountCode + " não existe");
+		if (!accountRepository.existsByCode(originAccountCode)) {
+			throw new AccountDoesNotExistsException(originAccountCode);
+		}
+
+		if (TRANSFERENCIA.getDescription().equals(operation)) {
+			if (destinationAccountCode == null || destinationAccountCode.isEmpty()) {
+				// TODO throw MethodArgumentNotValidException ????
+			}
+
+			if (!accountRepository.existsByCode(destinationAccountCode)) {
+				throw new AccountDoesNotExistsException(destinationAccountCode);
+			}
 		}
 	}
 
@@ -68,18 +91,15 @@ public class TransactionServiceImpl implements TransactionService {
 	 */
 	private void createTransferTransaction(TransactionRequestTO transactionTO, LocalDateTime transactionTime) {
 		List<Transaction> transactionsToSave = new ArrayList<>();
-		Transaction debitTransaction = new Transaction();
-		debitTransaction.setTypeOperation(TRANSFERENCIA);
-		debitTransaction.setValueTransaction(transactionTO.getValue().negate());
-		debitTransaction.setDateTime(transactionTime);
+
+		Transaction debitTransaction = Transaction.builder().typeOperation(TRANSFERENCIA)
+				.valueTransaction(transactionTO.getValue().negate()).dateTime(transactionTime).build();
 		accountRepository.findByCode(transactionTO.getOriginAccountCode())
 				.ifPresent(account -> debitTransaction.setAccountId(account.getId()));
 		transactionsToSave.add(debitTransaction);
 
-		Transaction creditTransaction = new Transaction();
-		creditTransaction.setTypeOperation(TRANSFERENCIA);
-		creditTransaction.setValueTransaction(transactionTO.getValue());
-		creditTransaction.setDateTime(transactionTime);
+		Transaction creditTransaction = Transaction.builder().typeOperation(TRANSFERENCIA)
+				.valueTransaction(transactionTO.getValue()).dateTime(transactionTime).build();
 		accountRepository.findByCode(transactionTO.getDestinationAccountCode())
 				.ifPresent(account -> creditTransaction.setAccountId(account.getId()));
 		transactionsToSave.add(creditTransaction);
@@ -94,22 +114,17 @@ public class TransactionServiceImpl implements TransactionService {
 	 * @param transactionTime the time of this transaction
 	 */
 	private void createSelfTransaction(TransactionRequestTO transactionTO, LocalDateTime transactionTime) {
-		Transaction transaction = new Transaction();
+		Transaction transaction = Transaction.builder().dateTime(transactionTime).build();
 
-		if (SAQUE.getDescription().equals(transactionTO.getOperation())) {
-			transaction.setTypeOperation(SAQUE);
-		} else {
-			transaction.setTypeOperation(DEPOSITO);
-		}
-
-		transaction.setDateTime(transactionTime);
 		accountRepository.findByCode(transactionTO.getOriginAccountCode())
 				.ifPresent(account -> transaction.setAccountId(account.getId()));
 
 		if (SAQUE.getDescription().equals(transactionTO.getOperation())) {
 			transaction.setValueTransaction(transactionTO.getValue().negate());
+			transaction.setTypeOperation(SAQUE);
 		} else if (DEPOSITO.getDescription().equals(transactionTO.getOperation())) {
 			transaction.setValueTransaction(transactionTO.getValue());
+			transaction.setTypeOperation(DEPOSITO);
 		}
 
 		transactionRepository.save(transaction);
