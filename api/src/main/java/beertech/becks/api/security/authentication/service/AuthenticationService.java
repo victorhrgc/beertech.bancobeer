@@ -8,6 +8,8 @@ import java.io.IOException;
 
 public interface AuthenticationService {
 
+
+
     void addAuthentication(HttpServletResponse response, String username) throws IOException;
 
     Authentication getAuthentication(HttpServletRequest request);

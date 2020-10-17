@@ -14,11 +14,15 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-@Component
 public class AuthenticationFilter extends GenericFilterBean {
 
-    @Autowired
     private AuthenticationService authenticationService;
+
+    @Autowired
+    public AuthenticationFilter(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
+
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
