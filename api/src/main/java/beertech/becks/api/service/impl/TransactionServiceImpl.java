@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import beertech.becks.api.entities.Account;
 import beertech.becks.api.tos.request.StatementRequestTO;
+import beertech.becks.api.tos.request.TransferRequestTO;
 import beertech.becks.api.tos.response.StatementResponseTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -153,6 +155,45 @@ public class TransactionServiceImpl implements TransactionService {
 				});
 
 		return accountStatement;
+	}
+
+	@Override
+	public void createDeposit(String accountCode, BigDecimal value) throws AccountDoesNotExistsException {
+		Account acc = accountRepository.findByCode(accountCode).orElseThrow(AccountDoesNotExistsException::new);		
+		
+		transactionRepository.save(Transaction.builder().typeOperation(DEPOSITO).dateTime(LocalDateTime.now())
+				.valueTransaction(value).accountId(acc.getId()).build());
+	}
+
+	@Override
+	public void createWithdrawal(String accountCode, BigDecimal value) throws AccountDoesNotExistsException {
+		Account acc = accountRepository.findByCode(accountCode).orElseThrow(AccountDoesNotExistsException::new);
+
+		transactionRepository.save(Transaction.builder().typeOperation(SAQUE).dateTime(LocalDateTime.now())
+				.valueTransaction(value.negate()).accountId(acc.getId()).build());
+	}
+
+	@Override
+	public void createTransfer(String accountCode, TransferRequestTO transferRequestTO)
+			throws AccountDoesNotExistsException {
+		LocalDateTime now = LocalDateTime.now();
+		Account originAcc = accountRepository.findByCode(accountCode).orElseThrow(AccountDoesNotExistsException::new);
+		Account destinationAcc = accountRepository.findByCode(transferRequestTO.getDestinationAccountCode())
+				.orElseThrow(AccountDoesNotExistsException::new);
+
+		List<Transaction> transactionsToSave = new ArrayList<>();
+
+		Transaction debitTransaction = Transaction.builder().typeOperation(TRANSFERENCIA)
+				.valueTransaction(transferRequestTO.getValue().negate()).dateTime(now).accountId(originAcc.getId())
+				.build();
+
+		Transaction creditTransaction = Transaction.builder().typeOperation(TRANSFERENCIA)
+				.valueTransaction(transferRequestTO.getValue()).dateTime(now).accountId(destinationAcc.getId()).build();
+
+		transactionsToSave.add(debitTransaction);
+		transactionsToSave.add(creditTransaction);
+		transactionRepository.saveAll(transactionsToSave);
+
 	}
 
 

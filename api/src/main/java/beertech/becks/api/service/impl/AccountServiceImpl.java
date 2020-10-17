@@ -3,6 +3,8 @@ package beertech.becks.api.service.impl;
 import java.math.BigDecimal;
 import java.util.List;
 
+import beertech.becks.api.exception.user.UserDoesNotExistException;
+import beertech.becks.api.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +27,17 @@ public class AccountServiceImpl implements AccountService {
 	@Autowired
 	private TransactionRepository transactionRepository;
 
+	@Autowired
+	private UserRepository userRepository;
+
 	@Override
-	public Account createAccount(AccountRequestTO accountRequestTO) throws AccountAlreadyExistsException {
+	public Account createAccount(AccountRequestTO accountRequestTO) throws AccountAlreadyExistsException, UserDoesNotExistException {
 		if (accountRepository.existsByCode(accountRequestTO.getCode())) {
 			throw new AccountAlreadyExistsException(accountRequestTO.getCode());
+		}
+
+		if(!userRepository.existsById(accountRequestTO.getUserId())) {
+			throw new UserDoesNotExistException();
 		}
 
 		Account account = new Account();

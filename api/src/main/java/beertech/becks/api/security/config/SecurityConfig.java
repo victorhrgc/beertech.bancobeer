@@ -2,7 +2,7 @@ package beertech.becks.api.security.config;
 
 import beertech.becks.api.security.filter.JwtAuthFilter;
 import beertech.becks.api.security.service.JwtService;
-import beertech.becks.api.security.service.UserService;
+import beertech.becks.api.security.service.UserSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -20,7 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-	private UserService userService;
+	private UserSecurityService userService;
 
 	@Autowired
 	private JwtService jwtService;
@@ -43,8 +43,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable().authorizeRequests()
-				.antMatchers("/transactions/**").hasRole("ADMIN")
-				.antMatchers("/accounts/**").hasRole("ADMIN")
+				.antMatchers("/transactions/**").permitAll()
+				.antMatchers("/accounts/**").permitAll()
 				.antMatchers("/login/**").permitAll().and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);

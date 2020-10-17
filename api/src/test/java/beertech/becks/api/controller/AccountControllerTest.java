@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import java.util.UUID;
 
 import beertech.becks.api.exception.account.AccountAlreadyExistsException;
+import beertech.becks.api.exception.user.UserDoesNotExistException;
 import beertech.becks.api.tos.request.AccountRequestTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -168,7 +169,8 @@ public class AccountControllerTest {
 		verify(accountService, times(1)).getBalance(accountCode);
 	}
 
-	private void thenExpectAccountServiceCreateAccountCall() throws AccountAlreadyExistsException {
+	private void thenExpectAccountServiceCreateAccountCall()
+			throws AccountAlreadyExistsException, UserDoesNotExistException {
 		verify(accountService, times(1)).createAccount(accountRequestTO);
 	}
 
@@ -176,7 +178,8 @@ public class AccountControllerTest {
 		verify(accountService, times(1)).getAll();
 	}
 
-	private void thenExpectAccountServiceCreateAccountNoCall() throws AccountAlreadyExistsException {
+	private void thenExpectAccountServiceCreateAccountNoCall()
+			throws AccountAlreadyExistsException, UserDoesNotExistException {
 		verify(accountService, times(0)).createAccount(accountRequestTO);
 	}
 

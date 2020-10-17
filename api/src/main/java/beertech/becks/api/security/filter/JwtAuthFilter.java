@@ -1,7 +1,7 @@
 package beertech.becks.api.security.filter;
 
 import beertech.becks.api.security.service.JwtService;
-import beertech.becks.api.security.service.UserService;
+import beertech.becks.api.security.service.UserSecurityService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,9 +17,9 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
 	JwtService jwtService;
-	UserService userService;
+	UserSecurityService userService;
 
-	public JwtAuthFilter(JwtService jwtService, UserService userService) {
+	public JwtAuthFilter(JwtService jwtService, UserSecurityService userService) {
 		this.jwtService = jwtService;
 		this.userService = userService;
 	}

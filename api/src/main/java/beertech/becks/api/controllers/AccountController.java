@@ -4,6 +4,7 @@ import static beertech.becks.api.constants.Constants.*;
 
 import javax.validation.Valid;
 
+import beertech.becks.api.exception.user.UserDoesNotExistException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,23 +28,25 @@ public class AccountController {
 	@Autowired
 	private AccountService accountService;
 
-	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = STATUS_200_POST_OK),
-			@ApiResponse(code = 201, message = STATUS_201_CREATED),
-			@ApiResponse(code = 400, message = STATUS_400_BAD_REQUEST),
-			@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR) })
+	@ApiResponses(
+			value = {
+				@ApiResponse(code = 200, message = STATUS_200_POST_OK),
+				@ApiResponse(code = 201, message = STATUS_201_CREATED),
+				@ApiResponse(code = 400, message = STATUS_400_BAD_REQUEST),
+				@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
+			})
 	@PostMapping
 	public ResponseEntity<Object> createAccount(@Valid @RequestBody AccountRequestTO accountTO)
-			throws AccountAlreadyExistsException {
+			throws AccountAlreadyExistsException, UserDoesNotExistException {
 		Account createdAccount = accountService.createAccount(accountTO);
 		return new ResponseEntity<>(createdAccount, HttpStatus.CREATED);
 	}
 
 	@ApiResponses(
 			value = {
-					@ApiResponse(code = 200, message = STATUS_200_GET_OK),
-					@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
-					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
+				@ApiResponse(code = 200, message = STATUS_200_GET_OK),
+				@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+				@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
 	@GetMapping("/{accountCode}/balance")
 	public ResponseEntity<Object> getAccountBalance(@PathVariable String accountCode)
@@ -54,9 +57,9 @@ public class AccountController {
 
 	@ApiResponses(
 			value = {
-					@ApiResponse(code = 200, message = STATUS_200_GET_OK),
-					@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
-					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
+				@ApiResponse(code = 200, message = STATUS_200_GET_OK),
+				@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+				@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
 	@GetMapping
 	public ResponseEntity<Object> getAllAccounts() {
@@ -65,9 +68,9 @@ public class AccountController {
 
 	@ApiResponses(
 			value = {
-					@ApiResponse(code = 200, message = STATUS_200_GET_OK),
-					@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
-					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
+				@ApiResponse(code = 200, message = STATUS_200_GET_OK),
+				@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+				@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
 	@GetMapping("/id/{accountId}")
 	public ResponseEntity<Account> getAccountById(@PathVariable Long accountId) throws AccountDoesNotExistsException {
@@ -76,9 +79,9 @@ public class AccountController {
 
 	@ApiResponses(
 			value = {
-					@ApiResponse(code = 200, message = STATUS_200_GET_OK),
-					@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
-					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
+				@ApiResponse(code = 200, message = STATUS_200_GET_OK),
+				@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+				@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
 	@GetMapping("/code/{accountCode}")
 	public ResponseEntity<Account> getAccountByCode(@PathVariable String accountCode) throws AccountDoesNotExistsException {

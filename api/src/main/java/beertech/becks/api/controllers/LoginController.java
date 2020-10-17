@@ -4,7 +4,7 @@ import beertech.becks.api.entities.User;
 import beertech.becks.api.tos.request.LoginRequestTO;
 import beertech.becks.api.tos.response.LoginResponseTO;
 import beertech.becks.api.security.service.JwtService;
-import beertech.becks.api.security.service.UserService;
+import beertech.becks.api.security.service.UserSecurityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -21,7 +21,7 @@ import static beertech.becks.api.constants.Constants.*;
 public class LoginController {
 
     @Autowired
-    private UserService userService;
+    private UserSecurityService userSecurityService;
 
     @Autowired
     private JwtService jwtService;
@@ -38,7 +38,7 @@ public class LoginController {
 		User loggingInUser = User.builder().email(loginRequestTO.getEmail()).password(loginRequestTO.getPassword())
 				.build();
 
-		userService.authenticate(loggingInUser);
+		userSecurityService.authenticate(loggingInUser);
 
 		return new ResponseEntity<>(LoginResponseTO.builder().token(jwtService.getToken(loggingInUser)).build(),
 				HttpStatus.OK);
