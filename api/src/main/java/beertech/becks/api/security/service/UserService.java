@@ -33,8 +33,9 @@ public class UserService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		User user = repository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+
 		return org.springframework.security.core.userdetails.User.builder().username(user.getEmail())
-				.password(user.getPassword()).roles("ADMIN") // TODO verificar roles
+				.password(user.getPassword()).roles(user.getRole().name()) // TODO verificar roles
 				.build();
 
 	}

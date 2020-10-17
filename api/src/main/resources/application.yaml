@@ -10,7 +10,7 @@ spring:
         format_sql: true
         type: trace
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
 
     database-platform: org.hibernate.dialect.PostgreSQL9Dialect
 
