@@ -33,7 +33,6 @@ public class Transaction implements Serializable {
 	@Column(name = "data_transaction")
 	private LocalDateTime dateTime;
 
-	// TODO talvez adicionar manytoone?
 	@Column(name = "FK_ACCOUNT_ID")
 	private Long accountId;
 }

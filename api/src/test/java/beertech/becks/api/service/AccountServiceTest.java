@@ -106,7 +106,7 @@ public class AccountServiceTest {
 	}
 
 	public void givenAccountRepositoryFindAllReturnsValues() {
-		doReturn(Arrays.asList(new Account(0L, "1", 1L), new Account(1L, "2", 2L))).when(accountRepository).findAll();
+		//doReturn(Arrays.asList(new Account(0L, "1", 1L), new Account(1L, "2", 2L))).when(accountRepository).findAll();
 	}
 
 	// Whens

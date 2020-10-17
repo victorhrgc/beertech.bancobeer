@@ -1,26 +1,27 @@
 package beertech.becks.api.controllers;
 
+import static beertech.becks.api.constants.Constants.*;
+
+import java.math.BigDecimal;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import beertech.becks.api.entities.Account;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
 import beertech.becks.api.exception.transaction.InvalidTransactionOperationException;
 import beertech.becks.api.service.TransactionService;
-import beertech.becks.api.tos.request.StatementRequestTO;
 import beertech.becks.api.tos.request.TransactionRequestTO;
 import beertech.becks.api.tos.request.TransferRequestTO;
 import beertech.becks.api.tos.response.StatementResponseTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
-
-import java.math.BigDecimal;
-
-import static beertech.becks.api.constants.Constants.*;
 
 @RestController
 @RequestMapping("/transactions")
@@ -49,11 +50,9 @@ public class TransactionController {
 					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
 	@GetMapping("/{accountCode}/statements")
-	public ResponseEntity<Object> getAccountStatements(@PathVariable String accountCode, @Valid @RequestBody StatementRequestTO statementRequestTO)
+	public ResponseEntity<StatementResponseTO> getAccountStatements(@PathVariable String accountCode)
 			throws AccountDoesNotExistsException, InvalidTransactionOperationException {
-
-		StatementResponseTO accountStatement = transactionService.getStatements(accountCode, statementRequestTO);
-		return new ResponseEntity<>(accountStatement, HttpStatus.OK);
+		return new ResponseEntity<>(transactionService.getStatements(accountCode), HttpStatus.OK);
 	}
 
 	@ApiResponses(
@@ -63,10 +62,9 @@ public class TransactionController {
 					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
 	@PostMapping("/{accountCode}/deposit")
-	public ResponseEntity<Object> createDeposit(@PathVariable String accountCode, @RequestParam() BigDecimal value)
+	public ResponseEntity<Account> createDeposit(@PathVariable String accountCode, @RequestParam() BigDecimal value)
 			throws AccountDoesNotExistsException {
-		transactionService.createDeposit(accountCode, value);
-		return new ResponseEntity<>(HttpStatus.CREATED);
+		return new ResponseEntity<>(transactionService.createDeposit(accountCode, value), HttpStatus.CREATED);
 	}
 
 	@ApiResponses(
@@ -76,10 +74,9 @@ public class TransactionController {
 					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
 	@PostMapping("/{accountCode}/withdrawal")
-	public ResponseEntity<Object> createWithdrawal(@PathVariable String accountCode, @RequestParam BigDecimal value)
+	public ResponseEntity<Account> createWithdrawal(@PathVariable String accountCode, @RequestParam BigDecimal value)
 			throws AccountDoesNotExistsException {
-		transactionService.createWithdrawal(accountCode, value);
-		return new ResponseEntity<>(HttpStatus.CREATED);
+		return new ResponseEntity<>(transactionService.createWithdrawal(accountCode, value), HttpStatus.CREATED);
 	}
 
 	@ApiResponses(
@@ -89,10 +86,10 @@ public class TransactionController {
 					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
 	@PostMapping("/{accountCode}/transfer")
-	public ResponseEntity<Object> createTransfer(@PathVariable String accountCode,
+	public ResponseEntity<Account> createTransfer(@PathVariable String accountCode,
 			@Valid @RequestBody TransferRequestTO transferRequestTO) throws AccountDoesNotExistsException {
-		transactionService.createTransfer(accountCode, transferRequestTO);
-		return new ResponseEntity<>(HttpStatus.CREATED);
+		return new ResponseEntity<>(transactionService.createTransfer(accountCode, transferRequestTO),
+				HttpStatus.CREATED);
 	}
 
 }

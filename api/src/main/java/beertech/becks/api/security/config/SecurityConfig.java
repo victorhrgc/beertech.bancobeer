@@ -43,9 +43,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable().authorizeRequests()
-				.antMatchers("/transactions/**").permitAll()
-				.antMatchers("/accounts/**").permitAll()
-				.antMatchers("/login/**").permitAll().and().sessionManagement()
+
+				.antMatchers("/accounts/**").hasAnyRole("ADMIN", "USER")
+				.antMatchers("/login/**").permitAll()
+				.antMatchers("/transactions/**/statements").hasAnyRole("ADMIN", "USER")
+				.antMatchers("/transactions/**/deposit").hasRole("ADMIN")
+				.antMatchers("/transactions/**/withdrawal").hasAnyRole("ADMIN", "USER")
+				.antMatchers("/transactions/**/transfer").hasAnyRole("ADMIN", "USER")
+				.antMatchers("/users/**").hasAnyRole("ADMIN", "USER")
+
+				.and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
 	}

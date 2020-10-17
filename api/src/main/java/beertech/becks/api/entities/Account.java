@@ -1,6 +1,7 @@
 package beertech.becks.api.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import javax.persistence.*;
 
@@ -23,7 +24,9 @@ public class Account implements Serializable {
 	@Column(name = "CODE")
 	private String code;
 
-	// TODO talvez adicionar manytoone?
+	@Column(name = "BALANCE")
+	private BigDecimal balance;
+
 	@Column(name = "FK_USER_ID")
 	private Long userId;
 }
