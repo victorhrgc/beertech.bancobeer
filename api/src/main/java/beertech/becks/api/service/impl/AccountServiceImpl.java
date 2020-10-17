@@ -33,6 +33,7 @@ public class AccountServiceImpl implements AccountService {
 
 		Account account = new Account();
 		account.setCode(accountRequestTO.getCode());
+		account.setUserId(accountRequestTO.getUserId());
 		return accountRepository.save(account);
 	}
 
