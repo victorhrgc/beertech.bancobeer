@@ -1,7 +1,5 @@
 package beertech.becks.api.victorauth.service;
 
-
-import beertech.becks.api.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -9,42 +7,36 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-/**
- * A service which does some authentication steps
- * @author victorhrgc
- */
+import beertech.becks.api.entities.User;
+import beertech.becks.api.exception.user.InvalidPasswordException;
+import beertech.becks.api.model.UserRoles;
+import beertech.becks.api.repositories.UsersRepository;
+
 @Service
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    private PasswordEncoder encoder;
+	@Autowired
+	private PasswordEncoder encoder;
 
-    @Autowired
-    //private UserRepository repository;
+	@Autowired
+	private UsersRepository repository;
 
+	public void authenticate(User user) throws Exception {
+		UserDetails userDetails = loadUserByUsername(user.getEmail());
 
-    public UserDetails authenticate(User user) throws Exception {
-        //UserDetails userDetails = loadUserByUsername(user.getLogin());
-        UserDetails userDetails = loadUserByUsername(user.getEmail());
+		//if (!encoder.matches(user.getPassword(), userDetails.getPassword())) {
+		if (!user.getPassword().equals(userDetails.getPassword())) {
+			throw new InvalidPasswordException();
+		}
+	}
 
-//        if (encoder.matches(user.getPassword(), userDetails.getPassword())) {
-        if (encoder.matches(user.getEmail(), userDetails.getPassword())) {
-            return userDetails;
-        }
+	@Override
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		User user = repository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        //throw new InvalidPasswordException();
-        throw new Exception();
-    }
+		return org.springframework.security.core.userdetails.User.builder().username(user.getEmail())
+				.password(user.getPassword()).roles(UserRoles.ADMIN.getDescription()) // TODO verificar roles
+				.build();
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        //User user = repository.findByLogin(username).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
-        User user = new User();
-
-        return org.springframework.security.core.userdetails.User.builder()
-                //.username(user.getLogin())
-                //.password(user.getPassword())
-                .roles("USER")
-                .build();
-    }
+	}
 }
