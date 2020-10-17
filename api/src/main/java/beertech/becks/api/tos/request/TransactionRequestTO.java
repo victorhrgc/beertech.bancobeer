@@ -26,6 +26,8 @@ public class TransactionRequestTO {
 	/**
 	 * The operation value
 	 */
+	@NotNull(message = "The value is mandatory")
+	@ApiModelProperty(required = true)
 	private BigDecimal value;
 
 	/**
@@ -47,15 +49,4 @@ public class TransactionRequestTO {
 	@NotBlank(message = "The transaction time is mandatory")
 	@ApiModelProperty(required = true)
 	private String transactionTime;
-
-
-	/**
-	 * Indicates the filter start date time for transactions
-	 */
-	private String startTransactionTime;
-
-	/**
-	 * Indicates the filter end date time for transactions
-	 */
-	private String endTransactionTime;
 }
