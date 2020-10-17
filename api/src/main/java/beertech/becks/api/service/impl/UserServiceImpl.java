@@ -6,7 +6,9 @@ import beertech.becks.api.service.UserService2;
 import beertech.becks.api.tos.request.LoginRequestTO;
 import beertech.becks.api.tos.request.UserRequestTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserServiceImpl implements UserService2 {
 
     @Autowired
