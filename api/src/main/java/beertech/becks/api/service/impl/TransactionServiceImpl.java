@@ -69,7 +69,7 @@ public class TransactionServiceImpl implements TransactionService {
 		}
 
 		if (!accountRepository.existsByCode(originAccountCode)) {
-			throw new AccountDoesNotExistsException(originAccountCode);
+			throw new AccountDoesNotExistsException();
 		}
 
 		if (TRANSFERENCIA.getDescription().equals(operation)) {
@@ -78,7 +78,7 @@ public class TransactionServiceImpl implements TransactionService {
 			}
 
 			if (!accountRepository.existsByCode(destinationAccountCode)) {
-				throw new AccountDoesNotExistsException(destinationAccountCode);
+				throw new AccountDoesNotExistsException();
 			}
 		}
 	}

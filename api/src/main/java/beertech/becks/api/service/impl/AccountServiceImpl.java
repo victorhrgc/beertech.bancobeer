@@ -39,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public BalanceResponseTO getBalance(String accountCode) throws AccountDoesNotExistsException {
 		if (!accountRepository.existsByCode(accountCode)) {
-			throw new AccountDoesNotExistsException(accountCode);
+			throw new AccountDoesNotExistsException();
 		}
 
 		BalanceResponseTO balance = new BalanceResponseTO();
@@ -54,5 +54,17 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public List<Account> getAll() {
 		return accountRepository.findAll();
+	}
+
+	@Override
+	public Account getAccountByCode(String accountCode) throws AccountDoesNotExistsException {
+		return accountRepository.findByCode(accountCode)
+				.orElseThrow(AccountDoesNotExistsException::new);
+	}
+
+	@Override
+	public Account getAccountById(Long accountId) throws AccountDoesNotExistsException {
+		return accountRepository.findById(accountId)
+				.orElseThrow(AccountDoesNotExistsException::new);
 	}
 }

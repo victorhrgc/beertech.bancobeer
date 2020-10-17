@@ -12,7 +12,11 @@ public interface AccountService {
 
 	Account createAccount(AccountRequestTO accountTO) throws AccountAlreadyExistsException;
 
+	BalanceResponseTO getBalance(String accountCode) throws AccountDoesNotExistsException;
+
 	List<Account> getAll();
 
-	BalanceResponseTO getBalance(String accountCode) throws AccountDoesNotExistsException;
+	Account getAccountByCode(String accountCode) throws AccountDoesNotExistsException;
+
+	Account getAccountById(Long accountId) throws AccountDoesNotExistsException;
 }

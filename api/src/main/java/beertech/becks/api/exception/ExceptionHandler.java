@@ -23,8 +23,8 @@ public class ExceptionHandler {
 
 	@org.springframework.web.bind.annotation.ExceptionHandler(AccountDoesNotExistsException.class)
 	public ResponseEntity<ErrorResponseTO> handleAccountDoesNotExistsException(AccountDoesNotExistsException ex) {
-		return new ResponseEntity<>(new ErrorResponseTO("Account with code " + ex.getMessage() + " does not exist"),
-				HttpStatus.OK);
+		return new ResponseEntity<>(new ErrorResponseTO("Account does not exist"),
+				HttpStatus.NOT_FOUND);
 	}
 
 	@org.springframework.web.bind.annotation.ExceptionHandler(AccountAlreadyExistsException.class)
