@@ -25,3 +25,9 @@ beertech:
     baseUrl: ${SWAGGER_BASE_URL:localhost:${server.port}}
     apiInfo: REST API for Bank Becks Service Microservice
     apiTitle: BeerTech Bank Becks Service
+
+
+security:
+  jwt:
+    expiry: 300
+    key: dmljdG9yY2FydmFsaG8=
