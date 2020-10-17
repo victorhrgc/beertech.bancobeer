@@ -51,4 +51,15 @@ public class AccountController {
 		BalanceResponseTO balance = accountService.getBalance(accountCode);
 		return new ResponseEntity<>(balance, HttpStatus.OK);
 	}
+
+	@ApiResponses(
+			value = {
+					@ApiResponse(code = 200, message = STATUS_200_GET_OK),
+					@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
+			})
+	@GetMapping("/listAll")
+	public ResponseEntity<Object> getAllAccount() {
+		return new ResponseEntity<>(accountService.getAll(), HttpStatus.CREATED);
+	}
 }
