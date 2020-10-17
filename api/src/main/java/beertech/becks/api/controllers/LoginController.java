@@ -35,7 +35,7 @@ public class LoginController {
 	@PostMapping("/authentication")
 	public ResponseEntity<LoginResponseTO> getToken(@RequestBody LoginRequestTO loginRequestTO) throws Exception {
 
-		User loggingInUser = User.builder().email(loginRequestTO.getUsername()).password(loginRequestTO.getPassword())
+		User loggingInUser = User.builder().email(loginRequestTO.getEmail()).password(loginRequestTO.getPassword())
 				.build();
 
 		userService.authenticate(loggingInUser);
