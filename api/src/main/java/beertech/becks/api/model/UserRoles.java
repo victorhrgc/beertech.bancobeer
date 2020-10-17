@@ -1,12 +1,12 @@
 package beertech.becks.api.model;
 
-public enum TypeOperation {
+public enum UserRoles {
 
-	DEPOSITO("D"), SAQUE("S"), TRANSFERENCIA("T");
+	ADMIN("A"), USER("U");
 
 	private final String description;
 
-	TypeOperation(String description) {
+	UserRoles(String description) {
 		this.description = description;
 	}
 
