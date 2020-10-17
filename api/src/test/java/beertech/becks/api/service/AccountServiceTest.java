@@ -6,7 +6,6 @@ import beertech.becks.api.exception.account.AccountDoesNotExistsException;
 import beertech.becks.api.repositories.AccountRepository;
 import beertech.becks.api.service.impl.AccountServiceImpl;
 import beertech.becks.api.tos.request.AccountRequestTO;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -83,7 +82,7 @@ public class AccountServiceTest {
 	}
 
 	@Test
-    @Ignore
+    //@Ignore
     //TODO olhar o pq ta falhando
 	//public void shouldGetAccountByCodeFailWhenAccountDoesNotExist() {
 //		givenAccountRepositoryExistsByCodeReturnsFalse();

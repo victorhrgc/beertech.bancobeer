@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
@@ -17,5 +18,9 @@ public class AccountRequestTO {
 	@NotBlank(message = "The account code is mandatory")
 	@ApiModelProperty(required = true)
 	private String code;
+
+	@NotNull(message = "The user id is required")
+	@ApiModelProperty(required = true)
+	private Long userId;
 
 }
