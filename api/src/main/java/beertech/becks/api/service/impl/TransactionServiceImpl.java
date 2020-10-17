@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import beertech.becks.api.tos.response.AccountStatementResponseTO;
+import beertech.becks.api.tos.request.StatementRequestTO;
+import beertech.becks.api.tos.response.StatementResponseTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -131,22 +132,18 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public AccountStatementResponseTO getStatements(TransactionRequestTO transactionTO) throws AccountDoesNotExistsException, InvalidTransactionOperationException {
+	public StatementResponseTO getStatements(String accountCode, StatementRequestTO statementRequestTO) throws AccountDoesNotExistsException, InvalidTransactionOperationException {
 
-		validateTransaction(transactionTO.getOriginAccountCode(), transactionTO.getDestinationAccountCode(),
-				transactionTO.getOperation());
+		validateTransaction(accountCode, "",	statementRequestTO.getOperation());
 
-		AccountStatementResponseTO accountStatement = new AccountStatementResponseTO();
+		StatementResponseTO accountStatement = new StatementResponseTO();
 
-		LocalDateTime transactionTime = LocalDateTime.parse(transactionTO.getTransactionTime(),
-				DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
-
-		accountRepository.findByCode(transactionTO.getOriginAccountCode())
+		accountRepository.findByCode(accountCode)
 				.ifPresent(account -> {
-						if (transactionTO.getStartTransactionTime() != null && transactionTO.getEndTransactionTime() != null){
+						if (statementRequestTO.getStartTransactionTime() != null && statementRequestTO.getEndTransactionTime() != null){
 							accountStatement.setAccountStatements(transactionRepository.getAccountStatementsByPeriod(account.getId(),
-									LocalDateTime.parse(transactionTO.getStartTransactionTime(),DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
-									LocalDateTime.parse(transactionTO.getEndTransactionTime(),DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))));
+									LocalDateTime.parse(statementRequestTO.getStartTransactionTime(),DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
+									LocalDateTime.parse(statementRequestTO.getEndTransactionTime(),DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))));
 						}
 						else{
 							accountStatement.setAccountStatements(transactionRepository.findByAccountId(account.getId()));

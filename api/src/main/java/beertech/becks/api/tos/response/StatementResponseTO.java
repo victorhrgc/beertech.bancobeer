@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountStatementResponseTO {
+public class StatementResponseTO {
 
 	private List<Transaction> accountStatements;
 

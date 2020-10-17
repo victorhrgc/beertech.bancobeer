@@ -1,22 +1,22 @@
 package beertech.becks.api.controllers;
 
-import static beertech.becks.api.constants.Constants.*;
-
-import javax.validation.Valid;
-
-import beertech.becks.api.tos.response.AccountStatementResponseTO;
+import beertech.becks.api.exception.account.AccountDoesNotExistsException;
+import beertech.becks.api.exception.transaction.InvalidTransactionOperationException;
+import beertech.becks.api.service.TransactionService;
+import beertech.becks.api.tos.request.StatementRequestTO;
+import beertech.becks.api.tos.request.TransactionRequestTO;
+import beertech.becks.api.tos.response.StatementResponseTO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import beertech.becks.api.exception.account.AccountDoesNotExistsException;
-import beertech.becks.api.exception.transaction.InvalidTransactionOperationException;
-import beertech.becks.api.service.TransactionService;
-import beertech.becks.api.tos.request.TransactionRequestTO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import javax.validation.Valid;
+
+import static beertech.becks.api.constants.Constants.*;
 
 @RestController
 @RequestMapping("/transactions")
@@ -44,10 +44,11 @@ public class TransactionController {
 					@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
 					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
-	@GetMapping("/accountStatements")
-	public ResponseEntity<Object> getAccountStatements(@Valid @RequestBody TransactionRequestTO transactionTO)
+	@GetMapping("/{accountCode}/statements")
+	public ResponseEntity<Object> getAccountStatements(@PathVariable String accountCode, @Valid @RequestBody StatementRequestTO statementRequestTO)
 			throws AccountDoesNotExistsException, InvalidTransactionOperationException {
-		AccountStatementResponseTO accountStatement = transactionService.getStatements(transactionTO);
+
+		StatementResponseTO accountStatement = transactionService.getStatements(accountCode, statementRequestTO);
 		return new ResponseEntity<>(accountStatement, HttpStatus.OK);
 	}
 
