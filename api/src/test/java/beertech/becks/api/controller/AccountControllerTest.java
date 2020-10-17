@@ -78,6 +78,14 @@ public class AccountControllerTest {
 		thenExpectAccountServiceCreateAccountNoCall();
 	}
 
+	@Test
+	public void getListAllAccounts() throws Exception {
+		givenAValidAccountCode();
+		whenCallGetListAllAccount();
+		thenExpectOkStatus();
+		thenExpectAccountList();
+	}
+
 	// Givens
 
 	private void givenAValidAccountCode() {
@@ -108,6 +116,10 @@ public class AccountControllerTest {
 				.getResponse();
 	}
 
+	private void whenCallGetListAllAccount() throws Exception{
+		response = mockMvc.perform(get(ACCOUNTS_ENDPOINT)).andReturn().getResponse();
+	}
+
 	// Thens
 
 	private void thenExpectOkStatus() {
@@ -128,6 +140,10 @@ public class AccountControllerTest {
 
 	private void thenExpectAccountServiceCreateAccountCall() throws AccountAlreadyExistsException {
 		verify(accountService, times(1)).createAccount(accountRequestTO);
+	}
+
+	private void thenExpectAccountList() throws AccountAlreadyExistsException {
+		verify(accountService, times(1)).getAll();
 	}
 
 	private void thenExpectAccountServiceCreateAccountNoCall() throws AccountAlreadyExistsException {

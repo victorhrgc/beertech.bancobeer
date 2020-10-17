@@ -60,6 +60,6 @@ public class AccountController {
 			})
 	@GetMapping("/listAll")
 	public ResponseEntity<Object> getAllAccount() {
-		return new ResponseEntity<>(accountService.getAll(), HttpStatus.CREATED);
+		return new ResponseEntity<>(accountService.getAll(), HttpStatus.OK);
 	}
 }
