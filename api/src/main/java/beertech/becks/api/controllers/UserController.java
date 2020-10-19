@@ -4,6 +4,7 @@ import static beertech.becks.api.constants.Constants.*;
 
 import javax.validation.Valid;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping("/users")
 @Api(value = "Bank Becks Service")
+@Slf4j
 public class UserController {
 
     @Autowired
@@ -34,6 +36,7 @@ public class UserController {
     @PostMapping
 	public ResponseEntity<Object> createUser(@Valid @RequestBody UserRequestTO userRequestTO)
 			throws UserAlreadyExistsException {
+        log.info("create user");
 		return new ResponseEntity<>(userService.createUser(userRequestTO), HttpStatus.CREATED);
 	}
 }
