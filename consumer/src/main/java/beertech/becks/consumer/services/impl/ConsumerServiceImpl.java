@@ -1,26 +1,21 @@
 package beertech.becks.consumer.services.impl;
 
-import beertech.becks.consumer.services.ConsumerService;
-
-import beertech.becks.consumer.tos.messages.DepositWithdrawalMessage;
-import beertech.becks.consumer.tos.messages.StatementsMessage;
-import beertech.becks.consumer.tos.messages.TransferMessage;
-import beertech.becks.consumer.tos.request.TransactionRequestTO;
+import beertech.becks.consumer.tos.request.TransferRequestTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.ReactiveHttpOutputMessage;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.BodyInserter;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import beertech.becks.consumer.services.ConsumerService;
+import beertech.becks.consumer.tos.messages.DepositWithdrawalMessage;
+import beertech.becks.consumer.tos.messages.StatementsMessage;
+import beertech.becks.consumer.tos.messages.TransferMessage;
 
 /**
  * The class implementing the description of the consumer services
@@ -53,7 +48,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 		String completeEndpoint = depositEndpoint.replaceAll("accountCode", message.getAccountCode()) + "?value="
 				+ message.getValue();
 
-		System.out.println(callApi(completeEndpoint, HttpMethod.POST, message.getJwtToken()));
+		System.out.println(callApi(completeEndpoint, HttpMethod.POST, message.getJwtToken(), null));
 	}
 
 	@Override
@@ -61,26 +56,39 @@ public class ConsumerServiceImpl implements ConsumerService {
 		String completeEndpoint = withdrawalEndpoint.replaceAll("accountCode", message.getAccountCode()) + "?value="
 				+ message.getValue();
 
-		System.out.println(callApi(completeEndpoint, HttpMethod.POST, message.getJwtToken()));
+		System.out.println(callApi(completeEndpoint, HttpMethod.POST, message.getJwtToken(), null));
 	}
 
 	@Override
 	public void treatTransferMessage(TransferMessage message) {
-		//TODO make transfer requests to the API
 		String completeEndpoint = transferEndpoint.replaceAll("accountCode", message.getOriginAccountCode());
-		System.out.println("Endpoint: " + completeEndpoint);
-		System.out.println("Message: " + message.toString());
+
+		String requestJson = null;
+		try {
+			requestJson = new ObjectMapper().writeValueAsString(TransferRequestTO.builder().value(message.getValue())
+					.destinationAccountCode(message.getDestinationAccountCode()).build());
+		} catch (JsonProcessingException e) {
+			LOGGER.error("Error converting message to json: " + e.getMessage());
+		}
+
+		System.out.println(callApi(completeEndpoint, HttpMethod.POST, message.getJwtToken(), requestJson));
 	}
 
 	@Override
 	public void treatStatementsMessage(StatementsMessage message) {
 		String completeEndpoint = statementsEndpoint.replaceAll("accountCode", message.getAccountCode());
 
-		System.out.println(callApi(completeEndpoint, HttpMethod.GET, message.getJwtToken()));
+		System.out.println(callApi(completeEndpoint, HttpMethod.GET, message.getJwtToken(), null));
 	}
 
-	private String callApi(String completeEndpoint, HttpMethod method, String jwtToken) {
+	private String callApi(String completeEndpoint, HttpMethod method, String jwtToken, String jsonBody) {
 		WebClient client = WebClient.create(completeEndpoint);
+
+		if (jsonBody != null) {
+			return client.method(HttpMethod.POST).body(BodyInserters.fromValue(jsonBody))
+					.header("Authorization", "Bearer " + jwtToken).header("Content-Type", "application/json").exchange()
+					.block().bodyToMono(String.class).block();
+		}
 
 		return client.method(method).header("Authorization", "Bearer " + jwtToken).exchange().block()
 				.bodyToMono(String.class).block();

@@ -5,36 +5,24 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransactionRequestTO {
-	/**
-	 * The operation type (D || S || T)
-	 */
-	private String operation;
+@Builder
+public class TransferRequestTO {
 
 	/**
-	 * The operation value
+	 * The value to be transfered
 	 */
 	private BigDecimal value;
-
-	/**
-	 * Indicates the unique code of the account that originates this transaction
-	 */
-	private String originAccountCode;
 
 	/**
 	 * Indicates the unique code of the account that is the recipient of this
 	 * transaction
 	 */
 	private String destinationAccountCode;
-
-	/**
-	 * Indicates the time of this transaction
-	 */
-	private String transactionTime;
 }
