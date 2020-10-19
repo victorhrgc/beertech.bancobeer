@@ -29,9 +29,4 @@ public class UserServiceImpl implements UserService {
 
 		return userRepository.save(userToSave);
 	}
-
-    @Override
-    public User findUser(LoginRequestTO loginRequestTO) {
-        return userRepository.findByEmailAndPassword(loginRequestTO.getEmail(), loginRequestTO.getPassword());
-    }
 }

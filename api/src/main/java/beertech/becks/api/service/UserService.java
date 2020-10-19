@@ -9,5 +9,4 @@ public interface UserService {
 
     User createUser(UserRequestTO userRequestTO) throws UserAlreadyExistsException;
 
-    User findUser(LoginRequestTO loginRequestTO);
 }
