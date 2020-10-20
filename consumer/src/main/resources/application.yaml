@@ -13,7 +13,7 @@ api:
 spring:
   rabbitmq:
 
-    addresses: amqps://gueehlpb:F5Wl-B8OtHYiGSjwJz31UxpCAm3JIvr8@toad.rmq.cloudamqp.com/gueehlpb
+    addresses: ${CLOUDAMQP_URL}
 
     exchange: transactions.consumer.exchange
 

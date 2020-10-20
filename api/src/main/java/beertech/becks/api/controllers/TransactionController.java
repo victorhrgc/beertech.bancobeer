@@ -26,7 +26,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @RequestMapping("/transactions")
 @Api(value = "Bank Becks Service")
-@ApiIgnore
 public class TransactionController {
 
 	@Autowired
