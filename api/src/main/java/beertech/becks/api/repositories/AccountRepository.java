@@ -7,7 +7,8 @@ import beertech.becks.api.entities.Account;
 import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
-	Boolean existsByCode(String code);
 
+	Boolean existsByCode(String code);
 	Optional<Account> findByCode(String code);
+
 }

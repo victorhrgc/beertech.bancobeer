@@ -1,6 +1,8 @@
 package beertech.becks.api.controllers;
 
 import static beertech.becks.api.constants.Constants.*;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.ResponseEntity.ok;
 
 import java.math.BigDecimal;
 
@@ -28,56 +30,54 @@ import springfox.documentation.annotations.ApiIgnore;
 @Api(value = "Bank Becks Service")
 public class TransactionController {
 
-	@Autowired
-	private TransactionService transactionService;
+    @Autowired
+    private TransactionService transactionService;
 
-	@ApiResponses(
-			value = {
-					@ApiResponse(code = 200, message = STATUS_200_GET_OK),
-					@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
-					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
-			})
-	@GetMapping("/{accountCode}/statements")
-	public ResponseEntity<StatementResponseTO> getAccountStatements(@PathVariable String accountCode)
-			throws AccountDoesNotExistsException, InvalidTransactionOperationException {
-		return new ResponseEntity<>(transactionService.getStatements(accountCode), HttpStatus.OK);
-	}
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = STATUS_200_GET_OK),
+                    @ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+                    @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
+            })
+    @GetMapping("/{accountCode}/statements")
+    public ResponseEntity<StatementResponseTO> getAccountStatements(@PathVariable String accountCode) throws AccountDoesNotExistsException, InvalidTransactionOperationException {
+        return ok(transactionService.getStatements(accountCode));
+    }
 
-	@ApiResponses(
-			value = {
-					@ApiResponse(code = 201, message = STATUS_201_CREATED),
-					@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
-					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
-			})
-	@PostMapping("/{accountCode}/deposit")
-	public ResponseEntity<Account> createDeposit(@PathVariable String accountCode, @RequestParam() BigDecimal value)
-			throws AccountDoesNotExistsException {
-		return new ResponseEntity<>(transactionService.createDeposit(accountCode, value), HttpStatus.CREATED);
-	}
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 201, message = STATUS_201_CREATED),
+                    @ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+                    @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
+            })
+    @PostMapping("/{accountCode}/deposit")
+    public ResponseEntity<Account> createDeposit(@PathVariable String accountCode, @RequestParam() BigDecimal value) throws AccountDoesNotExistsException {
+        return new ResponseEntity<>(transactionService.createDeposit(accountCode, value), CREATED);
+    }
 
-	@ApiResponses(
-			value = {
-					@ApiResponse(code = 201, message = STATUS_201_CREATED),
-					@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
-					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
-			})
-	@PostMapping("/{accountCode}/withdrawal")
-	public ResponseEntity<Account> createWithdrawal(@PathVariable String accountCode, @RequestParam BigDecimal value)
-			throws AccountDoesNotExistsException {
-		return new ResponseEntity<>(transactionService.createWithdrawal(accountCode, value), HttpStatus.CREATED);
-	}
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 201, message = STATUS_201_CREATED),
+                    @ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+                    @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
+            })
+    @PostMapping("/{accountCode}/withdrawal")
+    public ResponseEntity<Account> createWithdrawal(@PathVariable String accountCode, @RequestParam BigDecimal value)
+            throws AccountDoesNotExistsException {
+        return new ResponseEntity<>(transactionService.createWithdrawal(accountCode, value), CREATED);
+    }
 
-	@ApiResponses(
-			value = {
-					@ApiResponse(code = 201, message = STATUS_201_CREATED),
-					@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
-					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
-			})
-	@PostMapping("/{accountCode}/transfer")
-	public ResponseEntity<Account> createTransfer(@PathVariable String accountCode,
-			@Valid @RequestBody TransferRequestTO transferRequestTO) throws AccountDoesNotExistsException {
-		return new ResponseEntity<>(transactionService.createTransfer(accountCode, transferRequestTO),
-				HttpStatus.CREATED);
-	}
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 201, message = STATUS_201_CREATED),
+                    @ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+                    @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
+            })
+    @PostMapping("/{accountCode}/transfer")
+    public ResponseEntity<Account> createTransfer(@PathVariable String accountCode,
+                                                  @Valid @RequestBody TransferRequestTO transferRequestTO) throws AccountDoesNotExistsException {
+        return new ResponseEntity<>(transactionService.createTransfer(accountCode, transferRequestTO),
+                CREATED);
+    }
 
 }
