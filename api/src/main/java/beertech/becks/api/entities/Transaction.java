@@ -16,10 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Document
 public class Transaction implements Serializable {
-
-	private String id;
 
 	private TypeOperation typeOperation;
 
@@ -27,5 +24,4 @@ public class Transaction implements Serializable {
 
 	private LocalDateTime dateTime;
 
-	private String accountId;
 }

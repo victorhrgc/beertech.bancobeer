@@ -11,13 +11,13 @@ import beertech.becks.api.tos.response.StatementResponseTO;
 
 public interface TransactionService {
 
-	void createTransaction(TransactionRequestTO transactionTO) throws AccountDoesNotExistsException, InvalidTransactionOperationException;
-
 	Account createDeposit(String accountCode, BigDecimal value) throws AccountDoesNotExistsException;
 
 	Account createWithdrawal(String accountCode, BigDecimal value) throws AccountDoesNotExistsException;
 
-	Account createTransfer(String accountCode, TransferRequestTO transferRequestTO) throws AccountDoesNotExistsException;
+	Account createTransfer(String accountCode, TransferRequestTO transferRequestTO)
+			throws AccountDoesNotExistsException;
 
-	StatementResponseTO getStatements(String accountCode) throws AccountDoesNotExistsException, InvalidTransactionOperationException;
+	StatementResponseTO getStatements(String accountCode)
+			throws AccountDoesNotExistsException, InvalidTransactionOperationException;
 }

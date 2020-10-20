@@ -1,19 +1,18 @@
 package beertech.becks.api.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
-import beertech.becks.api.exception.user.UserDoesNotExistException;
-import beertech.becks.api.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import beertech.becks.api.entities.Account;
-import beertech.becks.api.entities.Transaction;
 import beertech.becks.api.exception.account.AccountAlreadyExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
+import beertech.becks.api.exception.user.UserDoesNotExistException;
 import beertech.becks.api.repositories.AccountRepository;
-import beertech.becks.api.repositories.TransactionRepository;
+import beertech.becks.api.repositories.UserRepository;
 import beertech.becks.api.service.AccountService;
 import beertech.becks.api.tos.request.AccountRequestTO;
 import beertech.becks.api.tos.response.BalanceResponseTO;
@@ -23,9 +22,6 @@ public class AccountServiceImpl implements AccountService {
 
 	@Autowired
 	private AccountRepository accountRepository;
-
-	@Autowired
-	private TransactionRepository transactionRepository;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -44,6 +40,7 @@ public class AccountServiceImpl implements AccountService {
 		account.setCode(accountRequestTO.getCode());
 		account.setUserId(accountRequestTO.getUserId());
 		account.setBalance(BigDecimal.ZERO);
+		account.setTransactions(new ArrayList<>());
 		return accountRepository.save(account);
 	}
 
@@ -55,9 +52,7 @@ public class AccountServiceImpl implements AccountService {
 
 		BalanceResponseTO balance = new BalanceResponseTO();
 
-		accountRepository.findByCode(accountCode)
-				.ifPresent(account -> balance.setBalance(transactionRepository.findByAccountId(account.getId()).stream()
-						.map(Transaction::getValueTransaction).reduce(BigDecimal.ZERO, BigDecimal::add)));
+		accountRepository.findByCode(accountCode).ifPresent(account -> balance.setBalance(account.getBalance()));
 
 		return balance;
 	}
