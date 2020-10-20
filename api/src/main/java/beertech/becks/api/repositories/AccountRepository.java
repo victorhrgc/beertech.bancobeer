@@ -1,12 +1,12 @@
 package beertech.becks.api.repositories;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import beertech.becks.api.entities.Account;
 
-import java.util.Optional;
-
-public interface AccountRepository extends JpaRepository<Account, Long> {
+public interface AccountRepository extends MongoRepository<Account, String> {
 	Boolean existsByCode(String code);
 
 	Optional<Account> findByCode(String code);

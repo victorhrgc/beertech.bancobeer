@@ -142,13 +142,7 @@ public class AccountServiceTest {
 		}
 	}
 
-	private void whenCallAccountServiceGetAccountById() {
-		try {
-			accountService.getAccountById(UUID.randomUUID().getMostSignificantBits());
-		} catch (Exception e) {
-			exception = e;
-		}
-	}
+
 
 	// Thens
 

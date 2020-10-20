@@ -3,7 +3,7 @@ package beertech.becks.api.entities;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.persistence.*;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,19 +14,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Document
 public class Account implements Serializable {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+	private String id;
 
-	@Column(name = "CODE")
 	private String code;
 
-	@Column(name = "BALANCE")
 	private BigDecimal balance;
 
-	@Column(name = "FK_USER_ID")
-	private Long userId;
+	private String userId;
 }

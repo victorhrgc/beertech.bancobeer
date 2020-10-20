@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import javax.persistence.*;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import beertech.becks.api.model.TypeOperation;
 import lombok.AllArgsConstructor;
@@ -16,23 +16,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Document
 public class Transaction implements Serializable {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+	private String id;
 
-	@Enumerated(EnumType.ORDINAL)
-	@Column(name = "operation")
 	private TypeOperation typeOperation;
 
-	@Column(name = "value_transaction")
 	private BigDecimal valueTransaction;
 
-	@Column(name = "data_transaction")
 	private LocalDateTime dateTime;
 
-	@Column(name = "FK_ACCOUNT_ID")
-	private Long accountId;
+	private String accountId;
 }

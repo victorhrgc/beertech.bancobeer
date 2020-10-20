@@ -43,6 +43,7 @@ public class AccountServiceImpl implements AccountService {
 		Account account = new Account();
 		account.setCode(accountRequestTO.getCode());
 		account.setUserId(accountRequestTO.getUserId());
+		account.setBalance(BigDecimal.ZERO);
 		return accountRepository.save(account);
 	}
 
@@ -73,7 +74,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public Account getAccountById(Long accountId) throws AccountDoesNotExistsException {
+	public Account getAccountById(String accountId) throws AccountDoesNotExistsException {
 		return accountRepository.findById(accountId)
 				.orElseThrow(AccountDoesNotExistsException::new);
 	}

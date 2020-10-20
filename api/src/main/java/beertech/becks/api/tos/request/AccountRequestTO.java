@@ -21,6 +21,6 @@ public class AccountRequestTO {
 
 	@NotNull(message = "The user id is required")
 	@ApiModelProperty(required = true)
-	private Long userId;
+	private String userId;
 
 }

@@ -1,13 +1,12 @@
 package beertech.becks.api.repositories;
 
-import beertech.becks.api.entities.Transaction;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
-public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-	List<Transaction> findByAccountId(Long accountId);
+import beertech.becks.api.entities.Transaction;
+
+public interface TransactionRepository extends MongoRepository<Transaction, String> {
+
+	List<Transaction> findByAccountId(String accountId);
 }

@@ -73,7 +73,7 @@ public class AccountController {
 				@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
 	@GetMapping("/id/{accountId}")
-	public ResponseEntity<Account> getAccountById(@PathVariable Long accountId) throws AccountDoesNotExistsException {
+	public ResponseEntity<Account> getAccountById(@PathVariable String accountId) throws AccountDoesNotExistsException {
 		return new ResponseEntity<>(accountService.getAccountById(accountId), HttpStatus.OK);
 	}
 
