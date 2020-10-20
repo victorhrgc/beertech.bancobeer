@@ -30,4 +30,4 @@ beertech:
 security:
   jwt:
     expiry: 3000
-    key: dmljdG9yY2FydmFsaG8=
+    key: abcde
