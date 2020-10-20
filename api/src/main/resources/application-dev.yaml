@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:8080}
+  port: 8080
 
 spring:
   jpa:
@@ -16,13 +16,13 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${JDBC_DATABASE_URL}
-    username: ${JDBC_DATABASE_USERNAME}
-    password: ${JDBC_DATABASE_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: password
 
 beertech:
   swagger:
-    baseUrl: ${SWAGGER_BASE_URL:beertech-bank.herokuapp.com:${server.port}}
+    baseUrl: ${SWAGGER_BASE_URL:localhost:${server.port}}
     apiInfo: REST API for Bank Becks Service Microservice
     apiTitle: BeerTech Bank Becks Service
 

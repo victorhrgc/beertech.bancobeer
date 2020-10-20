@@ -1,0 +1,26 @@
+server:
+  port: 8081
+
+api:
+  endpoint:
+    deposit: http://localhost:8080/transactions/accountCode/deposit
+    withdrawal: http://localhost:8080/transactions/accountCode/withdrawal
+    transfer: http://localhost:8080/transactions/accountCode/transfer
+    statements: http://localhost:8080/transactions/accountCode/statements
+
+
+spring:
+  rabbitmq:
+    exchange: transactions.consumer.exchange
+
+    queue:
+      deposit: deposit.queue
+      withdrawal: withdrawal.queue
+      transfer: transfer.queue
+      statements: statements.queue
+
+    routingkey:
+      deposit: deposit.rk
+      withdrawal: withdrawal.rk
+      transfer: transfer.rk
+      statements: statements.rk

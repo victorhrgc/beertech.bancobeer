@@ -1,16 +1,20 @@
 server:
-  port: 8081
+  port: ${PORT:8081}
 
 api:
   endpoint:
-    deposit: http://localhost:8080/transactions/accountCode/deposit
-    withdrawal: http://localhost:8080/transactions/accountCode/withdrawal
-    transfer: http://localhost:8080/transactions/accountCode/transfer
-    statements: http://localhost:8080/transactions/accountCode/statements
+    deposit: https://beertech-bank.herokuapp.com/transactions/accountCode/deposit
+    withdrawal: https://beertech-bank.herokuapp.com/transactions/accountCode/withdrawal
+    transfer: https://beertech-bank.herokuapp.com/transactions/accountCode/transfer
+    statements: https://beertech-bank.herokuapp.com/transactions/accountCode/statements
+
 
 
 spring:
   rabbitmq:
+
+    addresses: amqps://gueehlpb:F5Wl-B8OtHYiGSjwJz31UxpCAm3JIvr8@toad.rmq.cloudamqp.com/gueehlpb
+
     exchange: transactions.consumer.exchange
 
     queue:

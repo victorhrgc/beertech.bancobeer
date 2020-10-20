@@ -43,6 +43,7 @@ public class AccountServiceImpl implements AccountService {
 		Account account = new Account();
 		account.setCode(accountRequestTO.getCode());
 		account.setUserId(accountRequestTO.getUserId());
+		account.setBalance(BigDecimal.ZERO);
 		return accountRepository.save(account);
 	}
 
