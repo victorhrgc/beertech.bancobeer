@@ -11,7 +11,6 @@ import beertech.becks.api.service.AccountService;
 import beertech.becks.api.service.TransactionService;
 import beertech.becks.api.tos.request.TransferRequestTO;
 import beertech.becks.api.tos.response.StatementResponseTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,14 +24,17 @@ import static java.time.LocalDateTime.now;
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
-    @Autowired
-    private TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
+    private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
-    @Autowired
-    private AccountRepository accountRepository;
-
-    @Autowired
-    private AccountService accountService;
+    public TransactionServiceImpl(TransactionRepository transactionRepository,
+                                  AccountRepository accountRepository,
+                                  AccountService accountService) {
+        this.transactionRepository = transactionRepository;
+        this.accountRepository = accountRepository;
+        this.accountService = accountService;
+    }
 
     @Override
     public StatementResponseTO getStatements(String accountCode) throws AccountDoesNotExistsException {
