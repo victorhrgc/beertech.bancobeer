@@ -3,9 +3,11 @@ package beertech.becks.api.service.impl;
 import beertech.becks.api.entities.Account;
 import beertech.becks.api.entities.Transaction;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
+import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
 import beertech.becks.api.model.TypeOperation;
 import beertech.becks.api.repositories.AccountRepository;
 import beertech.becks.api.repositories.TransactionRepository;
+import beertech.becks.api.service.AccountService;
 import beertech.becks.api.service.TransactionService;
 import beertech.becks.api.tos.request.TransferRequestTO;
 import beertech.becks.api.tos.response.StatementResponseTO;
@@ -29,6 +31,9 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private AccountService accountService;
+
     @Override
     public StatementResponseTO getStatements(String accountCode) throws AccountDoesNotExistsException {
         Account account = findAccountByCode(accountCode);
@@ -46,25 +51,28 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Account createWithdrawal(String accountCode, BigDecimal value) throws AccountDoesNotExistsException {
+    public Account createWithdrawal(String accountCode, BigDecimal value) throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
         Account accountByCode = findAccountByCode(accountCode);
-        saveTransaction(value, accountByCode, now(), SAQUE);
-        return updateAccountAfterWithDraw(accountByCode, value);
+        accountService.checkAvailableBalance(accountByCode.getBalance(), negateValue(value));
+        saveTransaction(negateValue(value), accountByCode, now(), SAQUE);
+        return updateAccountAfterWithDraw(accountByCode, negateValue(value));
     }
 
     @Override
-    public Account createTransfer(String accountCode, TransferRequestTO transferRequestTO) throws AccountDoesNotExistsException {
+    public Account createTransfer(String accountCode, TransferRequestTO transferRequestTO) throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
 
         LocalDateTime currentDate = now();
 
         Account originAccount = findAccountByCode(accountCode);
         Account destinationAccount = findAccountByCode(transferRequestTO.getDestinationAccountCode());
 
+        accountService.checkAvailableBalance(originAccount.getBalance(), negateValue(transferRequestTO.getValue()));
         saveTransactionTransferDebit(transferRequestTO, currentDate, originAccount);
+
         saveTranscationTransferCredit(transferRequestTO, currentDate, destinationAccount);
 
         updateAccountAfterDeposit(destinationAccount, transferRequestTO.getValue());
-        return updateAccountAfterWithDraw(originAccount, transferRequestTO.getValue());
+        return updateAccountAfterWithDraw(originAccount, negateValue(transferRequestTO.getValue()));
 
     }
 

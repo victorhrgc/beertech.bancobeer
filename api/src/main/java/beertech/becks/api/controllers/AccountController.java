@@ -4,6 +4,7 @@ import static beertech.becks.api.constants.Constants.*;
 
 import javax.validation.Valid;
 
+import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
 import beertech.becks.api.exception.user.UserDoesNotExistException;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ public class AccountController {
 	@GetMapping("/{accountCode}/balance")
 	@ApiOperation(value = "Get account balance" , authorizations = @Authorization(value = "JWT"))
 	public ResponseEntity<Object> getAccountBalance(@PathVariable String accountCode)
-			throws AccountDoesNotExistsException {
+			throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
 		BalanceResponseTO balance = accountService.getBalance(accountCode);
 		return new ResponseEntity<>(balance, HttpStatus.OK);
 	}

@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import java.util.UUID;
 
 import beertech.becks.api.exception.account.AccountAlreadyExistsException;
+import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
 import beertech.becks.api.exception.user.UserDoesNotExistException;
 import beertech.becks.api.tos.request.AccountRequestTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -165,7 +166,7 @@ public class AccountControllerTest {
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-	private void thenExpectAccountServiceGetBalanceCall() throws AccountDoesNotExistsException {
+	private void thenExpectAccountServiceGetBalanceCall() throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
 		verify(accountService, times(1)).getBalance(accountCode);
 	}
 

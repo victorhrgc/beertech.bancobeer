@@ -1,22 +1,24 @@
 package beertech.becks.api.service.impl;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import beertech.becks.api.exception.user.UserDoesNotExistException;
-import beertech.becks.api.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import beertech.becks.api.entities.Account;
 import beertech.becks.api.entities.Transaction;
 import beertech.becks.api.exception.account.AccountAlreadyExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
+import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
+import beertech.becks.api.exception.user.UserDoesNotExistException;
 import beertech.becks.api.repositories.AccountRepository;
 import beertech.becks.api.repositories.TransactionRepository;
+import beertech.becks.api.repositories.UserRepository;
 import beertech.becks.api.service.AccountService;
 import beertech.becks.api.tos.request.AccountRequestTO;
 import beertech.becks.api.tos.response.BalanceResponseTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static beertech.becks.api.utils.BigDecimalUtil.subtractTwoValues;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -77,5 +79,17 @@ public class AccountServiceImpl implements AccountService {
 	public Account getAccountById(Long accountId) throws AccountDoesNotExistsException {
 		return accountRepository.findById(accountId)
 				.orElseThrow(AccountDoesNotExistsException::new);
+	}
+
+	@Override
+	public void checkAvailableBalance(BigDecimal balanceActual, BigDecimal transactionValue) throws AccountDoesNotHaveEnoughBalanceException {
+
+		BigDecimal subtraction = subtractTwoValues(balanceActual, transactionValue);
+
+		if((balanceActual.compareTo(BigDecimal.ZERO) == 0)
+				|| (subtraction.compareTo(BigDecimal.ZERO) == 0)
+				|| (subtraction.compareTo(BigDecimal.ZERO) == -1)) {
+			throw new AccountDoesNotHaveEnoughBalanceException();
+		}
 	}
 }

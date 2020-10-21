@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 
 import javax.validation.Valid;
 
+import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -64,7 +65,7 @@ public class TransactionController {
     @PostMapping("/{accountCode}/withdrawal")
     @ApiOperation(value = "Create withdrawal" , authorizations = @Authorization(value = "JWT"))
     public ResponseEntity<Account> createWithdrawal(@PathVariable String accountCode, @RequestParam BigDecimal value)
-            throws AccountDoesNotExistsException {
+            throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
         return new ResponseEntity<>(transactionService.createWithdrawal(accountCode, value), CREATED);
     }
 
@@ -77,7 +78,7 @@ public class TransactionController {
     @PostMapping("/{accountCode}/transfer")
     @ApiOperation(value = "Create transfer" , authorizations = @Authorization(value = "JWT"))
     public ResponseEntity<Account> createTransfer(@PathVariable String accountCode,
-                                                  @Valid @RequestBody TransferRequestTO transferRequestTO) throws AccountDoesNotExistsException {
+                                                  @Valid @RequestBody TransferRequestTO transferRequestTO) throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
         return new ResponseEntity<>(transactionService.createTransfer(accountCode, transferRequestTO),
                 CREATED);
     }
