@@ -50,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/transactions/**/deposit").hasRole("ADMIN")
                 .antMatchers("/transactions/**/withdrawal").hasAnyRole("ADMIN", "USER")
                 .antMatchers("/transactions/**/transfer").hasAnyRole("ADMIN", "USER")
-                .antMatchers("/users/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/users/**").permitAll()
 
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
