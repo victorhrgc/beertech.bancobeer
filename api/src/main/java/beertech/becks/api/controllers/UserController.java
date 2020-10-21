@@ -9,10 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import beertech.becks.api.exception.user.UserAlreadyExistsException;
 import beertech.becks.api.service.UserService;
@@ -22,6 +19,7 @@ import beertech.becks.api.tos.request.UserRequestTO;
 @RequestMapping("/users")
 @Api(value = "Bank Becks Service")
 @Slf4j
+@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired

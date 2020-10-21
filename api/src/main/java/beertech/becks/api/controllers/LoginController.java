@@ -18,6 +18,7 @@ import static beertech.becks.api.constants.Constants.*;
 @RestController
 @RequestMapping("/login")
 @Api(value = "Bank Becks Service")
+@CrossOrigin(origins = "*")
 public class LoginController {
 
     @Autowired
