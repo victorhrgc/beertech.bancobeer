@@ -1,100 +1,106 @@
 package beertech.becks.api.service.impl;
 
-import static beertech.becks.api.model.TypeOperation.*;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import beertech.becks.api.entities.Account;
 import beertech.becks.api.entities.Transaction;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
+import beertech.becks.api.model.TypeOperation;
 import beertech.becks.api.repositories.AccountRepository;
 import beertech.becks.api.repositories.TransactionRepository;
 import beertech.becks.api.service.TransactionService;
 import beertech.becks.api.tos.request.TransferRequestTO;
 import beertech.becks.api.tos.response.StatementResponseTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static beertech.becks.api.model.TypeOperation.*;
+import static beertech.becks.api.utils.BigDecimalUtil.*;
+import static java.time.LocalDateTime.now;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
-	@Autowired
-	private TransactionRepository transactionRepository;
+    @Autowired
+    private TransactionRepository transactionRepository;
 
-	@Autowired
-	private AccountRepository accountRepository;
+    @Autowired
+    private AccountRepository accountRepository;
 
-	@Override
-	public StatementResponseTO getStatements(String accountCode) throws AccountDoesNotExistsException {
-		Account acc = accountRepository.findByCode(accountCode).orElseThrow(AccountDoesNotExistsException::new);
+    @Override
+    public StatementResponseTO getStatements(String accountCode) throws AccountDoesNotExistsException {
+        Account account = findAccountByCode(accountCode);
+        return StatementResponseTO.builder()
+                .accountStatements(getListTranscationByAccountId(account))
+                .balance(account.getBalance())
+                .build();
+    }
 
-		StatementResponseTO accountStatement = new StatementResponseTO();
-		accountStatement.setAccountStatements(transactionRepository.findByAccountId(acc.getId()));
-		accountStatement.setBalance(acc.getBalance());
+    @Override
+    public Account createDeposit(String accountCode, BigDecimal value) throws AccountDoesNotExistsException {
+        Account accountByCode = findAccountByCode(accountCode);
+        saveTransaction(value, accountByCode, now(), DEPOSITO);
+        return updateAccountAfterDeposit(accountByCode, value);
+    }
 
-		return accountStatement;
-	}
+    @Override
+    public Account createWithdrawal(String accountCode, BigDecimal value) throws AccountDoesNotExistsException {
+        Account accountByCode = findAccountByCode(accountCode);
+        saveTransaction(value, accountByCode, now(), SAQUE);
+        return updateAccountAfterWithDraw(accountByCode, value);
+    }
 
-	@Override
-	public Account createDeposit(String accountCode, BigDecimal value) throws AccountDoesNotExistsException {
-		Account acc = accountRepository.findByCode(accountCode).orElseThrow(AccountDoesNotExistsException::new);
+    @Override
+    public Account createTransfer(String accountCode, TransferRequestTO transferRequestTO) throws AccountDoesNotExistsException {
 
-		transactionRepository.save(Transaction.builder().typeOperation(DEPOSITO).dateTime(LocalDateTime.now())
-				.valueTransaction(value).accountId(acc.getId()).build());
+        LocalDateTime currentDate = now();
 
-		acc.setBalance(acc.getBalance().add(value));
-		accountRepository.save(acc);
-		return acc;
-	}
+        Account originAccount = findAccountByCode(accountCode);
+        Account destinationAccount = findAccountByCode(transferRequestTO.getDestinationAccountCode());
 
-	@Override
-	public Account createWithdrawal(String accountCode, BigDecimal value) throws AccountDoesNotExistsException {
-		Account acc = accountRepository.findByCode(accountCode).orElseThrow(AccountDoesNotExistsException::new);
+        saveTransactionTransferDebit(transferRequestTO, currentDate, originAccount);
+        saveTranscationTransferCredit(transferRequestTO, currentDate, destinationAccount);
 
-		transactionRepository.save(Transaction.builder().typeOperation(SAQUE).dateTime(LocalDateTime.now())
-				.valueTransaction(value.negate()).accountId(acc.getId()).build());
+        updateAccountAfterDeposit(destinationAccount, transferRequestTO.getValue());
+        return updateAccountAfterWithDraw(originAccount, transferRequestTO.getValue());
 
-		acc.setBalance(acc.getBalance().subtract(value));
-		accountRepository.save(acc);
-		return acc;
-	}
+    }
 
-	@Override
-	public Account createTransfer(String accountCode, TransferRequestTO transferRequestTO)
-			throws AccountDoesNotExistsException {
-		LocalDateTime now = LocalDateTime.now();
-		Account originAcc = accountRepository.findByCode(accountCode).orElseThrow(AccountDoesNotExistsException::new);
-		Account destinationAcc = accountRepository.findByCode(transferRequestTO.getDestinationAccountCode())
-				.orElseThrow(AccountDoesNotExistsException::new);
+    private void saveTransactionTransferDebit(TransferRequestTO transferRequestTO, LocalDateTime currentDate, Account account) {
+        saveTransaction(negateValue(transferRequestTO.getValue()), account, currentDate, TRANSFERENCIA);
+    }
 
-		List<Transaction> transactionsToSave = new ArrayList<>();
+    private void saveTranscationTransferCredit(TransferRequestTO transferRequestTO, LocalDateTime currentDate, Account account) {
+        saveTransaction(transferRequestTO.getValue(), account, currentDate, TRANSFERENCIA);
+    }
 
-		Transaction debitTransaction = Transaction.builder().typeOperation(TRANSFERENCIA)
-				.valueTransaction(transferRequestTO.getValue().negate()).dateTime(now).accountId(originAcc.getId())
-				.build();
+    private Transaction saveTransaction(BigDecimal value, Account accountByCode, LocalDateTime currentDate, TypeOperation typeOperation) {
+        return transactionRepository.save(Transaction.builder()
+                .typeOperation(typeOperation)
+                .dateTime(currentDate)
+                .valueTransaction(value)
+                .accountId(accountByCode.getId())
+                .build());
+    }
 
-		Transaction creditTransaction = Transaction.builder().typeOperation(TRANSFERENCIA)
-				.valueTransaction(transferRequestTO.getValue()).dateTime(now).accountId(destinationAcc.getId()).build();
+    private List<Transaction> getListTranscationByAccountId(Account account) {
+        return transactionRepository.findByAccountId(account.getId());
+    }
 
-		transactionsToSave.add(debitTransaction);
-		transactionsToSave.add(creditTransaction);
-		transactionRepository.saveAll(transactionsToSave);
+    private Account findAccountByCode(String accountCode) throws AccountDoesNotExistsException {
+        return accountRepository.findByCode(accountCode).orElseThrow(AccountDoesNotExistsException::new);
+    }
 
-		List<Account> accountsToSave = new ArrayList<>();
+    private Account updateAccountAfterDeposit(Account account, BigDecimal value) {
+        account.setBalance(sumTwoValues(account.getBalance(), value));
+        return accountRepository.save(account);
+    }
 
-		originAcc.setBalance(originAcc.getBalance().subtract(transferRequestTO.getValue()));
-		accountsToSave.add(originAcc);
-
-		destinationAcc.setBalance(destinationAcc.getBalance().add(transferRequestTO.getValue()));
-		accountsToSave.add(destinationAcc);
-
-		accountRepository.saveAll(accountsToSave);
-
-		return originAcc;
-	}
+    private Account updateAccountAfterWithDraw(Account account, BigDecimal value) {
+        account.setBalance(subtractTwoValues(account.getBalance(), value));
+        return accountRepository.save(account);
+    }
 
 }

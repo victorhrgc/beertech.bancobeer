@@ -22,6 +22,7 @@ import beertech.becks.api.tos.response.BalanceResponseTO;
 @RestController
 @RequestMapping("/accounts")
 @Api(value = "Bank Becks Service")
+@CrossOrigin(origins = "*")
 public class AccountController {
 
 	@Autowired
