@@ -70,6 +70,18 @@ public class AccountController {
 
 	@ApiResponses(
 			value = {
+					@ApiResponse(code = 200, message = STATUS_200_GET_OK),
+					@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+					@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
+			})
+	@GetMapping("/user/{userId}")
+	@ApiOperation(value = "Get all accounts by user id" , authorizations = @Authorization(value = "JWT"))
+	public ResponseEntity<Object> getAllAccountsByUserId(@PathVariable Long userId) throws UserDoesNotExistException {
+		return new ResponseEntity<>(accountService.getAllAccountsByUserId(userId), HttpStatus.OK);
+	}
+
+	@ApiResponses(
+			value = {
 				@ApiResponse(code = 200, message = STATUS_200_GET_OK),
 				@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
 				@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)

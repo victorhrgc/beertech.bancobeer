@@ -2,7 +2,9 @@ package beertech.becks.api.service.impl;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
+import beertech.becks.api.entities.User;
 import beertech.becks.api.exception.user.UserDoesNotExistException;
 import beertech.becks.api.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +67,15 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public List<Account> getAll() {
 		return accountRepository.findAll();
+	}
+
+	@Override
+	public List<Account> getAllAccountsByUserId(Long userId) throws UserDoesNotExistException {
+		if(!userRepository.existsById(userId)) {
+			throw new UserDoesNotExistException();
+		}
+
+		return accountRepository.findByUserId(userId);
 	}
 
 	@Override
