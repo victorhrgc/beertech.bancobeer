@@ -34,6 +34,7 @@ public class AccountController {
 				@ApiResponse(code = 200, message = STATUS_200_POST_OK),
 				@ApiResponse(code = 201, message = STATUS_201_CREATED),
 				@ApiResponse(code = 400, message = STATUS_400_BAD_REQUEST),
+				@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
 				@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
 	@PostMapping

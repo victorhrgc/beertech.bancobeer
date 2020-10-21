@@ -42,7 +42,7 @@ public class ExceptionHandler {
 
 	@org.springframework.web.bind.annotation.ExceptionHandler(UserDoesNotExistException.class)
 	public ResponseEntity<ErrorResponseTO> handleUserDoesNotExistException(UserDoesNotExistException ex) {
-		return new ResponseEntity<>(new ErrorResponseTO("User doest not exist"), HttpStatus.OK);
+		return new ResponseEntity<>(new ErrorResponseTO("User does not exist"), HttpStatus.NOT_FOUND);
 	}
 
 	@org.springframework.web.bind.annotation.ExceptionHandler(UserAlreadyExistsException.class)

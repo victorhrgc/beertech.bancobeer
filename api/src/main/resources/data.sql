@@ -1,1 +1,1 @@
-insert into users values(-1, '1', '1',0,'1','1');
+insert into users values(-1, '123', '1@1','1','1','0');
