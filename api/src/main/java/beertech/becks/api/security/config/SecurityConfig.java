@@ -19,47 +19,48 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	private UserSecurityService userService;
+    @Autowired
+    private UserSecurityService userSecurityService;
 
-	@Autowired
-	private JwtService jwtService;
+    @Autowired
+    private JwtService jwtService;
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-	@Bean
-	public OncePerRequestFilter jwtFilter() {
-		return new JwtAuthFilter(jwtService, userService);
-	}
+    @Bean
+    public OncePerRequestFilter jwtFilter() {
+        return new JwtAuthFilter(jwtService, userSecurityService);
+    }
 
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
-	}
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userSecurityService).passwordEncoder(passwordEncoder());
+    }
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.cors().and().csrf().disable().authorizeRequests()
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.cors().and().csrf().disable().authorizeRequests()
 
-				.antMatchers("/accounts/**").hasAnyRole("ADMIN", "USER")
-				.antMatchers("/login/**").permitAll()
-				.antMatchers("/transactions/**/statements").hasAnyRole("ADMIN", "USER")
-				.antMatchers("/transactions/**/deposit").hasRole("ADMIN")
-				.antMatchers("/transactions/**/withdrawal").hasAnyRole("ADMIN", "USER")
-				.antMatchers("/transactions/**/transfer").hasAnyRole("ADMIN", "USER")
-				.antMatchers("/users/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/accounts/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/login/**").permitAll()
+                .antMatchers("/transactions/**/statements").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/transactions/**/deposit").hasRole("ADMIN")
+                .antMatchers("/transactions/**/withdrawal").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/transactions/**/transfer").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/users/**").hasAnyRole("ADMIN", "USER")
 
-				.and().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-				.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
-	}
+                .and().sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+    }
 
-	@Override
-	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "swagger-resources/**", "/swagger-ui.html",
-				"/webjars/**");
-	}
+    @Override
+    public void configure(WebSecurity web) {
+        web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "swagger-resources/**", "/swagger-ui.html",
+                "/webjars/**");
+    }
+
 }

@@ -1,19 +1,19 @@
 package beertech.becks.api.controllers;
 
 import beertech.becks.api.entities.User;
+import beertech.becks.api.security.service.JwtService;
+import beertech.becks.api.service.UserService;
 import beertech.becks.api.tos.request.LoginRequestTO;
 import beertech.becks.api.tos.response.LoginResponseTO;
-import beertech.becks.api.security.service.JwtService;
-import beertech.becks.api.security.service.UserSecurityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static beertech.becks.api.constants.Constants.*;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/login")
@@ -22,7 +22,7 @@ import static beertech.becks.api.constants.Constants.*;
 public class LoginController {
 
     @Autowired
-    private UserSecurityService userSecurityService;
+    private UserService userService;
 
     @Autowired
     private JwtService jwtService;
@@ -33,16 +33,14 @@ public class LoginController {
                     @ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
                     @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
             })
-	@PostMapping("/authentication")
-	public ResponseEntity<LoginResponseTO> getToken(@RequestBody LoginRequestTO loginRequestTO) throws Exception {
+    @PostMapping("/authentication")
+    public ResponseEntity<LoginResponseTO> getAuthentication(@RequestBody LoginRequestTO loginRequestTO) throws Exception {
+        User loggingInUser = userService.findUserByEmailAndPasswordForLogin(loginRequestTO.getEmail(), loginRequestTO.getPassword());
+        return ok(getAuthenticationWithToken(loggingInUser));
+    }
 
-		User loggingInUser = User.builder().email(loginRequestTO.getEmail()).password(loginRequestTO.getPassword())
-				.build();
-
-		userSecurityService.authenticate(loggingInUser);
-
-		return new ResponseEntity<>(LoginResponseTO.builder().token(jwtService.getToken(loggingInUser)).build(),
-				HttpStatus.OK);
-
+	private LoginResponseTO getAuthenticationWithToken(User loggingInUser) {
+		return LoginResponseTO.builder().token(jwtService.getToken(loggingInUser)).build();
 	}
+
 }
