@@ -49,7 +49,6 @@ public class JwtService {
 		Claims claimsUser = Jwts.claims().setSubject(user.getEmail());
 		claimsUser.put("id", user.getId());
 		claimsUser.put("documentNumber", user.getDocumentNumber());
-		claimsUser.put("email", user.getEmail());
 		claimsUser.put("auth", user.getRole());
 		claimsUser.put("name", user.getName());
     	return claimsUser;
