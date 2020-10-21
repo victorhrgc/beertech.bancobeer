@@ -21,8 +21,7 @@ public class JwtService {
 
     public String getToken(User user) {
         LocalDateTime dateTimeExpiry = LocalDateTime.now().plusMinutes(Long.parseLong(expiry));
-        return Jwts.builder().setClaims(getClaimsUser(user)).
-                setSubject(user.getEmail())
+        return Jwts.builder().setClaims(getClaimsUser(user))
                 .setExpiration(Date.from(dateTimeExpiry.atZone(ZoneId.systemDefault()).toInstant()))
                 .signWith(SignatureAlgorithm.HS512, key).compact();
     }
@@ -46,11 +45,11 @@ public class JwtService {
     }
 
     private Claims getClaimsUser(User user) {
-		Claims claimsUser = Jwts.claims().setSubject(user.getEmail());
-		claimsUser.put("id", user.getId());
-		claimsUser.put("documentNumber", user.getDocumentNumber());
-		claimsUser.put("auth", user.getRole());
-		claimsUser.put("name", user.getName());
-    	return claimsUser;
-	}
+        Claims claimsUser = Jwts.claims().setSubject(user.getEmail());
+        claimsUser.put("id", user.getId());
+        claimsUser.put("documentNumber", user.getDocumentNumber());
+        claimsUser.put("auth", user.getRole());
+        claimsUser.put("name", user.getName());
+        return claimsUser;
+    }
 }
