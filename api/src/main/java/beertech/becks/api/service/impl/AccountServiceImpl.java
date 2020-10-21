@@ -70,6 +70,15 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
+	public List<Account> getAllAccountsByUserId(Long userId) throws UserDoesNotExistException {
+		if(!userRepository.existsById(userId)) {
+			throw new UserDoesNotExistException();
+		}
+
+		return accountRepository.findByUserId(userId);
+	}
+
+	@Override
 	public Account getAccountByCode(String accountCode) throws AccountDoesNotExistsException {
 		return accountRepository.findByCode(accountCode)
 				.orElseThrow(AccountDoesNotExistsException::new);
@@ -87,8 +96,9 @@ public class AccountServiceImpl implements AccountService {
 		BigDecimal subtraction = subtractTwoValues(balanceActual, transactionValue);
 
 		if((balanceActual.compareTo(BigDecimal.ZERO) == 0)
-				|| (subtraction.compareTo(BigDecimal.ZERO) == 0)
-				|| (subtraction.compareTo(BigDecimal.ZERO) == -1)) {
+			|| (subtraction.compareTo(BigDecimal.ZERO) == 0)
+			|| (subtraction.compareTo(BigDecimal.ZERO) == -1))
+		{
 			throw new AccountDoesNotHaveEnoughBalanceException();
 		}
 	}

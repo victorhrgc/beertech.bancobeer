@@ -19,6 +19,8 @@ public interface AccountService {
 
 	List<Account> getAll();
 
+	List<Account> getAllAccountsByUserId(Long userId) throws UserDoesNotExistException;
+
 	Account getAccountByCode(String accountCode) throws AccountDoesNotExistsException;
 
 	Account getAccountById(Long accountId) throws AccountDoesNotExistsException;

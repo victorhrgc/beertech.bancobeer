@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,4 +30,9 @@ public class Account implements Serializable {
 
 	@Column(name = "FK_USER_ID")
 	private Long userId;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "FK_USER_ID", insertable = false, updatable = false)
+	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+	private User user;
 }
