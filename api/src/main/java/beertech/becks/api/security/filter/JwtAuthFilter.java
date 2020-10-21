@@ -16,8 +16,8 @@ import java.io.IOException;
 
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-	JwtService jwtService;
-	UserSecurityService userService;
+	private final JwtService jwtService;
+	private final UserSecurityService userService;
 
 	public JwtAuthFilter(JwtService jwtService, UserSecurityService userService) {
 		this.jwtService = jwtService;
