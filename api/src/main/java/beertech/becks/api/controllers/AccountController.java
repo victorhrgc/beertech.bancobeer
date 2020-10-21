@@ -5,6 +5,7 @@ import static beertech.becks.api.constants.Constants.*;
 import javax.validation.Valid;
 
 import beertech.becks.api.exception.user.UserDoesNotExistException;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,6 @@ import beertech.becks.api.exception.account.AccountDoesNotExistsException;
 import beertech.becks.api.service.AccountService;
 import beertech.becks.api.tos.request.AccountRequestTO;
 import beertech.becks.api.tos.response.BalanceResponseTO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping("/accounts")
@@ -37,6 +35,7 @@ public class AccountController {
 				@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
 	@PostMapping
+	@ApiOperation(value = "Create account" , authorizations = @Authorization(value = "JWT"))
 	public ResponseEntity<Object> createAccount(@Valid @RequestBody AccountRequestTO accountTO)
 			throws AccountAlreadyExistsException, UserDoesNotExistException {
 		Account createdAccount = accountService.createAccount(accountTO);
@@ -50,6 +49,7 @@ public class AccountController {
 				@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
 	@GetMapping("/{accountCode}/balance")
+	@ApiOperation(value = "Get account balance" , authorizations = @Authorization(value = "JWT"))
 	public ResponseEntity<Object> getAccountBalance(@PathVariable String accountCode)
 			throws AccountDoesNotExistsException {
 		BalanceResponseTO balance = accountService.getBalance(accountCode);
@@ -63,6 +63,7 @@ public class AccountController {
 				@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
 	@GetMapping
+	@ApiOperation(value = "Get all accounts" , authorizations = @Authorization(value = "JWT"))
 	public ResponseEntity<Object> getAllAccounts() {
 		return new ResponseEntity<>(accountService.getAll(), HttpStatus.OK);
 	}
@@ -74,6 +75,7 @@ public class AccountController {
 				@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
 	@GetMapping("/id/{accountId}")
+	@ApiOperation(value = "Get accounts by id" , authorizations = @Authorization(value = "JWT"))
 	public ResponseEntity<Account> getAccountById(@PathVariable Long accountId) throws AccountDoesNotExistsException {
 		return new ResponseEntity<>(accountService.getAccountById(accountId), HttpStatus.OK);
 	}
@@ -85,6 +87,7 @@ public class AccountController {
 				@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
 	@GetMapping("/code/{accountCode}")
+	@ApiOperation(value = "Get account by code" , authorizations = @Authorization(value = "JWT"))
 	public ResponseEntity<Account> getAccountByCode(@PathVariable String accountCode) throws AccountDoesNotExistsException {
 		return new ResponseEntity<>(accountService.getAccountByCode(accountCode), HttpStatus.OK);
 	}
