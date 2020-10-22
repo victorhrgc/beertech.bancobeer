@@ -16,7 +16,7 @@ public class BigDecimalUtil {
 
     public static BigDecimal subtractTwoValues(BigDecimal value1, BigDecimal  value2) {
         try {
-            return value1.add(value2);
+            return value1.subtract(value2);
         } catch (Exception erro) {
             return ZERO;
         }

@@ -70,8 +70,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         accountService.checkAvailableBalance(originAccount.getBalance(), negateValue(transferRequestTO.getValue()));
         saveTransactionTransferDebit(transferRequestTO, currentDate, originAccount);
-
-        saveTranscationTransferCredit(transferRequestTO, currentDate, destinationAccount);
+        saveTransactionTransferCredit(transferRequestTO, currentDate, destinationAccount);
 
         updateAccountAfterDeposit(destinationAccount, transferRequestTO.getValue());
         return updateAccountAfterWithDraw(originAccount, negateValue(transferRequestTO.getValue()));
@@ -82,12 +81,12 @@ public class TransactionServiceImpl implements TransactionService {
         saveTransaction(negateValue(transferRequestTO.getValue()), account, currentDate, TRANSFERENCIA);
     }
 
-    private void saveTranscationTransferCredit(TransferRequestTO transferRequestTO, LocalDateTime currentDate, Account account) {
+    private void saveTransactionTransferCredit(TransferRequestTO transferRequestTO, LocalDateTime currentDate, Account account) {
         saveTransaction(transferRequestTO.getValue(), account, currentDate, TRANSFERENCIA);
     }
 
-    private Transaction saveTransaction(BigDecimal value, Account accountByCode, LocalDateTime currentDate, TypeOperation typeOperation) {
-        return transactionRepository.save(Transaction.builder()
+    private void saveTransaction(BigDecimal value, Account accountByCode, LocalDateTime currentDate, TypeOperation typeOperation) {
+        transactionRepository.save(Transaction.builder()
                 .typeOperation(typeOperation)
                 .dateTime(currentDate)
                 .valueTransaction(value)
@@ -109,7 +108,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private Account updateAccountAfterWithDraw(Account account, BigDecimal value) {
-        account.setBalance(subtractTwoValues(account.getBalance(), value));
+        account.setBalance(sumTwoValues(account.getBalance(), value));
         return accountRepository.save(account);
     }
 

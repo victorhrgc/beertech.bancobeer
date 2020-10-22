@@ -109,9 +109,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void checkAvailableBalance(BigDecimal balanceActual, BigDecimal transactionValue) throws AccountDoesNotHaveEnoughBalanceException {
-
         BigDecimal subtraction = subtractTwoValues(balanceActual, transactionValue);
-
         if (verifyAvailableBalance(balanceActual, subtraction)) {
             throw new AccountDoesNotHaveEnoughBalanceException();
         }
