@@ -8,12 +8,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import java.util.UUID;
 
-import beertech.becks.api.exception.account.AccountAlreadyExistsException;
-import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
-import beertech.becks.api.exception.user.UserDoesNotExistException;
-import beertech.becks.api.tos.request.AccountRequestTO;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,9 +20,15 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import beertech.becks.api.controllers.AccountController;
+import beertech.becks.api.exception.account.AccountAlreadyExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
+import beertech.becks.api.exception.user.UserDoesNotExistException;
 import beertech.becks.api.service.AccountService;
+import beertech.becks.api.tos.request.AccountRequestTO;
 
 @ExtendWith(MockitoExtension.class)
 public class AccountControllerTest {
@@ -43,6 +43,7 @@ public class AccountControllerTest {
 
 	private String accountCode;
 	private Long accountId;
+	private Long userId;
 	private AccountRequestTO accountRequestTO;
 	private MockHttpServletResponse response;
 
@@ -56,6 +57,21 @@ public class AccountControllerTest {
 	}
 
 	// Tests
+	@Test
+	public void createAccountSuccessfullyWithValidAccountRequestTO() throws Exception {
+		givenValidAccountRequestTO();
+		whenCallPostCreateAccount();
+		thenExpectCreatedStatus();
+		thenExpectAccountServiceCreateAccountCall();
+	}
+
+	@Test
+	public void createAccountUnsuccessfullyWithInvalidAccountRequestTO() throws Exception {
+		givenInvalidAccountRequestTO();
+		whenCallPostCreateAccount();
+		thenExpectBadRequestStatus();
+		thenExpectAccountServiceCreateAccountNoCall();
+	}
 
 	@Test
 	public void getBalanceSuccessfullyWithAccountCode() throws Exception {
@@ -66,26 +82,18 @@ public class AccountControllerTest {
 	}
 
 	@Test
-	public void postAccountSuccessfully() throws Exception {
-		givenValidAccountRequestTO();
-		whenCallPostCreateAccount();
-		//thenExpectCreatedStatus();
-		//thenExpectAccountServiceCreateAccountCall();
-	}
-
-	@Test
-	public void postAccountUnsuccessfully() throws Exception {
-		givenInvalidAccountRequestTO();
-		whenCallPostCreateAccount();
-		thenExpectBadRequestStatus();
-		thenExpectAccountServiceCreateAccountNoCall();
-	}
-
-	@Test
-	public void getListAllAccounts() throws Exception {
-		whenCallGetListAllAccounts();
+	public void getAllAccountsSuccessfully() throws Exception {
+		whenCallGetAllAccounts();
 		thenExpectOkStatus();
 		thenExpectAccountServiceGetAllCall();
+	}
+
+	@Test
+	public void getAllAccountsSuccessfullyWithUserId() throws Exception {
+		givenAValidUserId();
+		whenCallGetAllAccountsByUserId();
+		thenExpectOkStatus();
+		thenExpectAccountServiceGetAllAccountsByUserIdCall();
 	}
 
 	@Test
@@ -113,44 +121,49 @@ public class AccountControllerTest {
 	private void givenAValidAccountId() {
 		accountId = UUID.randomUUID().getMostSignificantBits();
 	}
-	
+
+	private void givenAValidUserId() {
+		userId = UUID.randomUUID().getMostSignificantBits();
+	}
+
 	private void givenValidAccountRequestTO() {
 		accountRequestTO = new AccountRequestTO();
 		accountRequestTO.setCode(UUID.randomUUID().toString());
+		accountRequestTO.setUserId(UUID.randomUUID().getLeastSignificantBits());
 	}
 
 	private void givenInvalidAccountRequestTO() {
 		accountRequestTO = null;
 	}
 
-
 	// Whens
 
 	private void whenCallGetBalance() throws Exception {
 		response = mockMvc.perform(get(ACCOUNTS_ENDPOINT + "/" + accountCode + "/balance")).andReturn().getResponse();
 	}
-	
-	private void whenCallPostCreateAccount() throws Exception {
-		response = mockMvc.perform(post(ACCOUNTS_ENDPOINT)
-				.header("Content-Type", MediaType.APPLICATION_JSON)
-				.content(objectToJson(accountRequestTO)))
-				.andReturn()
-				.getResponse();
-	}
 
-	private void whenCallGetListAllAccounts() throws Exception{
+	private void whenCallGetAllAccounts() throws Exception {
 		response = mockMvc.perform(get(ACCOUNTS_ENDPOINT)).andReturn().getResponse();
 	}
 
+	private void whenCallPostCreateAccount() throws Exception {
+
+		response = mockMvc.perform(post(ACCOUNTS_ENDPOINT).header("Content-Type", MediaType.APPLICATION_JSON)
+				.content(objectToJson(accountRequestTO))).andReturn().getResponse();
+
+	}
+
 	private void whenCallGetAccountByCode() throws Exception {
-		response = mockMvc.perform(get(ACCOUNTS_ENDPOINT + "/code/" + accountCode )).andReturn().getResponse();
+		response = mockMvc.perform(get(ACCOUNTS_ENDPOINT + "/code/" + accountCode)).andReturn().getResponse();
+	}
+
+	private void whenCallGetAllAccountsByUserId() throws Exception {
+		response = mockMvc.perform(get(ACCOUNTS_ENDPOINT + "/user/" + userId)).andReturn().getResponse();
 	}
 
 	private void whenCallGetAccountById() throws Exception {
-		response = mockMvc.perform(get(ACCOUNTS_ENDPOINT + "/id/" + accountId )).andReturn().getResponse();
+		response = mockMvc.perform(get(ACCOUNTS_ENDPOINT + "/id/" + accountId)).andReturn().getResponse();
 	}
-
-
 
 	// Thens
 
@@ -166,7 +179,7 @@ public class AccountControllerTest {
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-	private void thenExpectAccountServiceGetBalanceCall() throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
+	private void thenExpectAccountServiceGetBalanceCall() throws AccountDoesNotExistsException {
 		verify(accountService, times(1)).getBalance(accountCode);
 	}
 
@@ -175,7 +188,7 @@ public class AccountControllerTest {
 		verify(accountService, times(1)).createAccount(accountRequestTO);
 	}
 
-	private void thenExpectAccountServiceGetAllCall() throws AccountAlreadyExistsException {
+	private void thenExpectAccountServiceGetAllCall() {
 		verify(accountService, times(1)).getAll();
 	}
 
@@ -188,10 +201,12 @@ public class AccountControllerTest {
 		verify(accountService, times(1)).getAccountByCode(accountCode);
 	}
 
+	private void thenExpectAccountServiceGetAllAccountsByUserIdCall() throws UserDoesNotExistException {
+		verify(accountService, times(1)).getAllAccountsByUserId(userId);
+	}
+
 	private void thenExpectAccountServiceGetAccountByIdCall() throws AccountDoesNotExistsException {
 		verify(accountService, times(1)).getAccountById(accountId);
 	}
-	
-
 
 }

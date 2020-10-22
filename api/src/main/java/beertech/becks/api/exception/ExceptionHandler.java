@@ -1,7 +1,5 @@
 package beertech.becks.api.exception;
 
-import beertech.becks.api.exception.user.UserAlreadyExistsException;
-import beertech.becks.api.exception.user.UserDoesNotExistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -10,7 +8,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import beertech.becks.api.exception.account.AccountAlreadyExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
-import beertech.becks.api.exception.transaction.InvalidTransactionOperationException;
+import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
+import beertech.becks.api.exception.user.UserAlreadyExistsException;
+import beertech.becks.api.exception.user.UserDoesNotExistException;
 import beertech.becks.api.tos.response.ErrorResponseTO;
 
 @RestControllerAdvice
@@ -34,12 +34,6 @@ public class ExceptionHandler {
 				HttpStatus.OK);
 	}
 
-	@org.springframework.web.bind.annotation.ExceptionHandler(InvalidTransactionOperationException.class)
-	public ResponseEntity<ErrorResponseTO> handleInvalidTransactionOperationException(
-			InvalidTransactionOperationException ex) {
-		return new ResponseEntity<>(new ErrorResponseTO("Operation " + ex.getMessage() + " is invalid"), HttpStatus.OK);
-	}
-
 	@org.springframework.web.bind.annotation.ExceptionHandler(UserDoesNotExistException.class)
 	public ResponseEntity<ErrorResponseTO> handleUserDoesNotExistException(UserDoesNotExistException ex) {
 		return new ResponseEntity<>(new ErrorResponseTO("User does not exist"), HttpStatus.NOT_FOUND);
@@ -48,6 +42,12 @@ public class ExceptionHandler {
 	@org.springframework.web.bind.annotation.ExceptionHandler(UserAlreadyExistsException.class)
 	public ResponseEntity<ErrorResponseTO> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
 		return new ResponseEntity<>(new ErrorResponseTO("User already exists"), HttpStatus.OK);
+	}
+
+	@org.springframework.web.bind.annotation.ExceptionHandler(AccountDoesNotHaveEnoughBalanceException.class)
+	public ResponseEntity<ErrorResponseTO> handleAccountDoesNotHaveEnoughBalanceException(
+			AccountDoesNotHaveEnoughBalanceException ex) {
+		return new ResponseEntity<>(new ErrorResponseTO("No balance available for transaction"), HttpStatus.OK);
 	}
 
 }

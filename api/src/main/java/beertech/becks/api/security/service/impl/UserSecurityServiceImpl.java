@@ -10,8 +10,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import static beertech.becks.api.utils.StringUtil.isEquals;
-
 @Service
 public class UserSecurityServiceImpl implements UserSecurityService, UserDetailsService {
 
@@ -25,9 +23,9 @@ public class UserSecurityServiceImpl implements UserSecurityService, UserDetails
     @Override
     public void authenticate(User user) throws Exception {
         UserDetails userDetails = loadUserByUsername(user.getEmail());
-        if (!isEquals(user.getPassword(), userDetails.getPassword())) {
-            throw new InvalidPasswordException();
-        }
+		if (!user.getPassword().equals(userDetails.getPassword())) {
+			throw new InvalidPasswordException();
+		}
     }
 
     @Override

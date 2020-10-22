@@ -1,18 +1,19 @@
 package beertech.becks.api.service;
 
-import beertech.becks.api.entities.Account;
-import beertech.becks.api.entities.Transaction;
-import beertech.becks.api.exception.account.AccountAlreadyExistsException;
-import beertech.becks.api.exception.account.AccountDoesNotExistsException;
-import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
-import beertech.becks.api.exception.transaction.InvalidTransactionOperationException;
-import beertech.becks.api.fixture.TransactionFixture;
-import beertech.becks.api.repositories.AccountRepository;
-import beertech.becks.api.repositories.TransactionRepository;
-import beertech.becks.api.service.impl.TransactionServiceImpl;
-import beertech.becks.api.tos.request.TransactionRequestTO;
-import beertech.becks.api.tos.request.TransferRequestTO;
-import beertech.becks.api.tos.response.StatementResponseTO;
+import static beertech.becks.api.constants.ConstantsTests.Hash.HASH_eccbc87e4b5ce2fe28308fd9f2a7baf3;
+import static beertech.becks.api.constants.ConstantsTests.Values.VALUE_50;
+import static beertech.becks.api.fixture.AccountFixture.aAccountForTestsTransaction;
+import static beertech.becks.api.fixture.AccountFixture.aAccountForTransfer;
+import static java.math.BigDecimal.ZERO;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,21 +23,15 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static beertech.becks.api.constants.ConstantsTests.Hash.HASH_eccbc87e4b5ce2fe28308fd9f2a7baf3;
-import static beertech.becks.api.constants.ConstantsTests.Values.VALUE_100;
-import static beertech.becks.api.constants.ConstantsTests.Values.VALUE_50;
-import static beertech.becks.api.fixture.AccountFixture.*;
-import static java.math.BigDecimal.ZERO;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import beertech.becks.api.entities.Account;
+import beertech.becks.api.entities.Transaction;
+import beertech.becks.api.exception.account.AccountDoesNotExistsException;
+import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
+import beertech.becks.api.repositories.AccountRepository;
+import beertech.becks.api.repositories.TransactionRepository;
+import beertech.becks.api.service.impl.TransactionServiceImpl;
+import beertech.becks.api.tos.request.TransferRequestTO;
+import beertech.becks.api.tos.response.StatementResponseTO;
 
 @ExtendWith(MockitoExtension.class)
 public class TransactionServiceTest {

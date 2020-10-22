@@ -4,21 +4,19 @@ import static beertech.becks.api.constants.Constants.*;
 
 import javax.validation.Valid;
 
-import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
-import beertech.becks.api.exception.user.UserDoesNotExistException;
-import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import beertech.becks.api.entities.Account;
 import beertech.becks.api.exception.account.AccountAlreadyExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
+import beertech.becks.api.exception.user.UserDoesNotExistException;
 import beertech.becks.api.service.AccountService;
 import beertech.becks.api.tos.request.AccountRequestTO;
 import beertech.becks.api.tos.response.BalanceResponseTO;
+import io.swagger.annotations.*;
 
 @RestController
 @RequestMapping("/accounts")
@@ -54,7 +52,7 @@ public class AccountController {
 	@GetMapping("/{accountCode}/balance")
 	@ApiOperation(value = "Get account balance" , authorizations = @Authorization(value = "JWT"))
 	public ResponseEntity<Object> getAccountBalance(@PathVariable String accountCode)
-			throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
+			throws AccountDoesNotExistsException {
 		BalanceResponseTO balance = accountService.getBalance(accountCode);
 		return new ResponseEntity<>(balance, HttpStatus.OK);
 	}

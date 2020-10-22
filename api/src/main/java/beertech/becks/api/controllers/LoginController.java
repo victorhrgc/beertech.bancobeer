@@ -1,5 +1,12 @@
 package beertech.becks.api.controllers;
 
+import static beertech.becks.api.constants.Constants.*;
+import static org.springframework.http.ResponseEntity.ok;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import beertech.becks.api.entities.User;
 import beertech.becks.api.security.service.JwtService;
 import beertech.becks.api.service.UserService;
@@ -8,12 +15,6 @@ import beertech.becks.api.tos.response.LoginResponseTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import static beertech.becks.api.constants.Constants.*;
-import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/login")
