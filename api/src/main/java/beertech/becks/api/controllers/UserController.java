@@ -30,7 +30,7 @@ public class UserController {
             @ApiResponse(code = 400, message = STATUS_400_BAD_REQUEST),
             @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR) })
     @PostMapping
-    @ApiOperation(value = "Create user" , authorizations = @Authorization(value = "JWT"))
+    @ApiOperation(value = "Create user")
 	public ResponseEntity<Object> createUser(@Valid @RequestBody UserRequestTO userRequestTO)
 			throws UserAlreadyExistsException {
         log.info("create user");
