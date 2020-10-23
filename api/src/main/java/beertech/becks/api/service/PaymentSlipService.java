@@ -7,4 +7,9 @@ import beertech.becks.api.entities.PaymentSlip;
 public interface PaymentSlipService {
 
 	List<PaymentSlip> findAll();
+
+	List<PaymentSlip> findByUserDocumentNumber();
+
+	void executePayment();
+
 }
