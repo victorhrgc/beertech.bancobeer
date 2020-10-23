@@ -111,7 +111,7 @@ public class TransactionServiceTest {
         @Test
         public void shouldPostTransactionDeposit() throws AccountDoesNotExistsException {
             when(accountRepositoryMock.findByCode(any())).thenReturn(Optional.of(currentAccount));
-            when(transactionRepositoryMock.save(any()));
+            when(transactionRepositoryMock.save(any())).thenReturn(new Transaction());
             when(accountRepositoryMock.save(any())).thenReturn(currentAccount);
 
             Account accountDeposit = transactionServiceMock.createDeposit(currentAccount.getCode(), VALUE_50);
@@ -128,14 +128,15 @@ public class TransactionServiceTest {
                     .destinationAccountCode(HASH_eccbc87e4b5ce2fe28308fd9f2a7baf3)
                     .value(VALUE_50).build();
 
-            when(accountRepositoryMock.findByCode(any())).thenReturn(Optional.of(currentAccount));
-            when(accountRepositoryMock.findByCode(any())).thenReturn(Optional.of(destinationAccount));
-            when(transactionRepositoryMock.save(any()));
-            when(accountRepositoryMock.save(any())).thenReturn(currentAccount);
+            when(accountRepositoryMock.findByCode(currentAccount.getCode())).thenReturn(Optional.of(currentAccount));
+            when(accountRepositoryMock.findByCode(transferRequestTO.getDestinationAccountCode())).thenReturn(Optional.of(destinationAccount));
+            when(transactionRepositoryMock.save(any())).thenReturn(new Transaction());
+            when(accountRepositoryMock.save(currentAccount)).thenReturn(currentAccount);
+            when(accountRepositoryMock.save(destinationAccount)).thenReturn(destinationAccount);
 
             Account accountTransfer = transactionServiceMock.createTransfer(currentAccount.getCode(), transferRequestTO);
             assertNotNull(accountTransfer);
-            assertEquals(currentAccount.getBalance(), ZERO);
+            assertEquals(accountTransfer.getBalance(), ZERO);
         }
 
         @Test

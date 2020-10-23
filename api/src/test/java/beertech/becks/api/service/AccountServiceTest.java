@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,9 +48,6 @@ public class AccountServiceTest {
 
 	private List<Account> allAccounts;
 
-	public class AllTests {
-	}
-
 	// Tests
 
 	@Test
@@ -87,7 +85,7 @@ public class AccountServiceTest {
 	@Test
 	public void shouldGetBalanceFailWhenAccountDoesNotExist() {
 		givenAccountRepositoryExistsByCodeReturnsFalse(accountCode);
-		whenCallAccountServiceGetBalance();
+		whenCallAccountServiceGetBalanceForSpecificAccount(accountCode);
 		thenExpectAccountDoesNotExistsException();
 	}
 
@@ -153,7 +151,7 @@ public class AccountServiceTest {
 	}
 
 	public void givenAccountRepositoryExistsByCodeReturnsFalse(String accountCode) {
-		doReturn(false).when(accountRepository).existsByCode(accountCode);
+		when(accountRepository.existsByCode(accountCode)).thenReturn(false);
 	}
 
 	public void givenAccountRepositoryFindAllReturnsValues() {
@@ -176,6 +174,14 @@ public class AccountServiceTest {
 	private void whenCallGetAllAccountsByUserId() {
 		try {
 			allAccounts = accountService.getAllAccountsByUserId(userId);
+		} catch (Exception e) {
+			exception = e;
+		}
+	}
+
+	private void whenCallAccountServiceGetBalanceForSpecificAccount(String accountCode) {
+		try {
+			accountService.getBalance(accountCode);
 		} catch (Exception e) {
 			exception = e;
 		}
