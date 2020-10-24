@@ -1,5 +1,6 @@
 package beertech.becks.api.service.impl;
 
+import beertech.becks.api.model.UserRoles;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,9 @@ public class UserServiceImpl implements UserService {
 		}
 
 		User user = userRepository.save(getUserByUserRequestTO(userRequestTO));
-		createUserAccount(user);
+		if(!user.getRole().equals(UserRoles.ADMIN)) {
+			createUserAccount(user);
+		}
 		return user;
 	}
 

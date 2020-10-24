@@ -13,7 +13,7 @@ api:
 spring:
   rabbitmq:
 
-    addresses: ${CLOUDAMQP_URL}
+    addresses: ${CLOUDAMQP_URL:localhost}
 
     exchange: transactions.consumer.exchange
 

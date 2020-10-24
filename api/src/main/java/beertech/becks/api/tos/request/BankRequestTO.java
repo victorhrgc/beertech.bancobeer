@@ -1,12 +1,12 @@
 package beertech.becks.api.tos.request;
 
+import javax.validation.constraints.NotBlank;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
@@ -14,11 +14,11 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class BankRequestTO {
 
-	@NotNull(message = "The code is required")
+	@NotBlank(message = "The code is required")
 	@ApiModelProperty(required = true)
 	private String code;
 
-	@NotNull(message = "The name is required")
+	@NotBlank(message = "The name is required")
 	@ApiModelProperty(required = true)
 	private String name;
 

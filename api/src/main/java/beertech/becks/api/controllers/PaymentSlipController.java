@@ -65,7 +65,7 @@ public class PaymentSlipController {
                     @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
             })
     @PostMapping("/code/{paymentSlipCode}")
-    @ApiOperation(value = "Executing payment", authorizations = @Authorization(value = "JWT"))
+    @ApiOperation(value = "Pay payment slip", authorizations = @Authorization(value = "JWT"))
     public ResponseEntity<Object> executePayment(@PathVariable String paymentSlipCode) throws PaymentSlipExecutionException {
         return new ResponseEntity<>(paymentSlipService.executePayment(paymentSlipCode), HttpStatus.OK);
     }
@@ -77,7 +77,7 @@ public class PaymentSlipController {
           @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
       })
   @PostMapping
-  @ApiOperation(value = "Create a payment")
+  @ApiOperation(value = "Create a payment slip")
   public ResponseEntity<Void> createPaymentSlip(@RequestBody PaymentSlipTO paymentSlipTO)
       throws Exception {
     paymentSlipService.decodeAndSave(paymentSlipTO.getCode());
