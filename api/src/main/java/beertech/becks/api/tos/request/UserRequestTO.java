@@ -26,7 +26,7 @@ public class UserRequestTO {
     @ApiModelProperty(required = true)
     private String password;
 
-    @NotNull(message = "The role is mandatory")
+    @NotNull(message = "A valid role is mandatory [ADMIN, USER]")
     @ApiModelProperty(required = true)
     private UserRoles role;
 }

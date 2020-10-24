@@ -36,11 +36,10 @@ public class UserController {
             @ApiResponse(code = 201, message = STATUS_201_CREATED),
             @ApiResponse(code = 400, message = STATUS_400_BAD_REQUEST),
             @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR) })
-    @PostMapping
-    @ApiOperation(value = "Create user")
+	@PostMapping
+	@ApiOperation(value = "Create user")
 	public ResponseEntity<Object> createUser(@Valid @RequestBody UserRequestTO userRequestTO)
 			throws UserAlreadyExistsException {
-		log.info("create user");
 		return new ResponseEntity<>(userService.createUser(userRequestTO), HttpStatus.CREATED);
 	}
 }
