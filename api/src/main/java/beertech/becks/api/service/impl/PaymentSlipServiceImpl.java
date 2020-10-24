@@ -48,7 +48,7 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 			if("001".equals(paymentSlip.getDestinationBankCode())) {
 
 				TransactionPaymentRequestTO transactionPaymentRequestTO = new TransactionPaymentRequestTO();
-				transactionPaymentRequestTO.setCurrentAccountCode("accountCode"); // alterar estrutura de dados
+				transactionPaymentRequestTO.setCurrentAccountCode(paymentSlip.getOriginAccountCode()); // alterar estrutura de dados
 				transactionPaymentRequestTO.setDestinationAccountCode(paymentSlip.getDestinationAccountCode());
 				transactionPaymentRequestTO.setValue(paymentSlip.getValue());
 
