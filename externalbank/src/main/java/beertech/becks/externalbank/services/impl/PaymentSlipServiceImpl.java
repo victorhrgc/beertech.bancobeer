@@ -1,14 +1,15 @@
 package beertech.becks.externalbank.services.impl;
 
-import beertech.becks.externalbank.services.PaymentSlipService;
-import beertech.becks.externalbank.tos.request.PaymentSlipRequestTO;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.xml.bind.DatatypeConverter;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import beertech.becks.externalbank.services.PaymentSlipService;
+import beertech.becks.externalbank.tos.request.PaymentSlipRequestTO;
 
 @Service
 public class PaymentSlipServiceImpl implements PaymentSlipService {
@@ -22,20 +23,15 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 
 		WebClient client = WebClient.create(createPaymentSlipEndpoint);
 
-		String requestJson = null;
-		try {
-			requestJson = new ObjectMapper().writeValueAsString(to);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
+		String requestJson = "{\"code\":\"" + encodedPaymentSlipCode + "\"}";
 
 		String ret = client.method(HttpMethod.POST).body(BodyInserters.fromValue(requestJson))
 				.header("Content-Type", "application/json").exchange().block().bodyToMono(String.class).block();
-
 	}
 
 	private String encode(PaymentSlipRequestTO to) {
-		return "";
+		String fullString = to.getDate() + "-" + to.getValue() + "-" + to.getOrigin() + "-" + to.getDestination();
+		return DatatypeConverter.printHexBinary(fullString.getBytes());
 	}
 
 }

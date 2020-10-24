@@ -5,6 +5,7 @@ import static beertech.becks.api.constants.Constants.STATUS_404_NOT_FOUND;
 import static beertech.becks.api.constants.Constants.STATUS_500_INTERNAL_SERVER_ERROR;
 
 import beertech.becks.api.exception.payment.PaymentSlipExecutionException;
+import beertech.becks.api.exception.user.UserDoesNotExistException;
 import beertech.becks.api.service.PaymentSlipService;
 import beertech.becks.api.tos.request.PaymentSlipTO;
 import io.swagger.annotations.Api;
@@ -52,8 +53,8 @@ public class PaymentSlipController {
                     @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
             })
     @GetMapping("/user/{userId}")
-    @ApiOperation(value = "Get payment slips by user document number", authorizations = @Authorization(value = "JWT"))
-    public ResponseEntity<Object> getPaymentSlipsByUserId(@PathVariable Long userId) {
+    @ApiOperation(value = "Get payment slips by user id", authorizations = @Authorization(value = "JWT"))
+    public ResponseEntity<Object> getPaymentSlipsByUserId(@PathVariable Long userId) throws UserDoesNotExistException {
         return new ResponseEntity<>(paymentSlipService.findByUserId(userId), HttpStatus.OK);
     }
 
@@ -63,10 +64,10 @@ public class PaymentSlipController {
                     @ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
                     @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
             })
-    @PostMapping("/{paymentCode}")
+    @PostMapping("/code/{paymentSlipCode}")
     @ApiOperation(value = "Executing payment", authorizations = @Authorization(value = "JWT"))
-    public ResponseEntity<Object> executePayment(@PathVariable String paymentCode) throws PaymentSlipExecutionException {
-        return new ResponseEntity<>(paymentSlipService.executePayment(paymentCode), HttpStatus.OK);
+    public ResponseEntity<Object> executePayment(@PathVariable String paymentSlipCode) throws PaymentSlipExecutionException {
+        return new ResponseEntity<>(paymentSlipService.executePayment(paymentSlipCode), HttpStatus.OK);
     }
 
   @ApiResponses(
@@ -75,8 +76,8 @@ public class PaymentSlipController {
           @ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
           @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
       })
-  @PostMapping("/")
-  @ApiOperation(value = "Create a payment", authorizations = @Authorization(value = "JWT"))
+  @PostMapping
+  @ApiOperation(value = "Create a payment")
   public ResponseEntity<Void> createPaymentSlip(@RequestBody PaymentSlipTO paymentSlipTO)
       throws Exception {
     paymentSlipService.decodeAndSave(paymentSlipTO.getCode());

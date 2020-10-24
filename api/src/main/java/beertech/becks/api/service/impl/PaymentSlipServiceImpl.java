@@ -4,7 +4,9 @@ import beertech.becks.api.amqp.RabbitProducer;
 import beertech.becks.api.converter.PaymentSlipConverter;
 import beertech.becks.api.entities.PaymentSlip;
 import beertech.becks.api.exception.payment.PaymentSlipExecutionException;
+import beertech.becks.api.exception.user.UserDoesNotExistException;
 import beertech.becks.api.repositories.PaymentSlipRepository;
+import beertech.becks.api.repositories.UserRepository;
 import beertech.becks.api.service.PaymentSlipService;
 import beertech.becks.api.service.TransactionService;
 import beertech.becks.api.tos.request.TransactionPaymentRequestTO;
@@ -21,6 +23,9 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 
 	@Autowired
 	private PaymentSlipRepository paymentSlipRepository;
+	
+	@Autowired
+	private UserRepository userRepository; 
 
 	@Autowired
 	private TransactionService transactionService;
@@ -34,7 +39,10 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 	}
 
 	@Override
-	public Optional<PaymentSlip> findByUserId(Long userId) {
+	public List<PaymentSlip> findByUserId(Long userId) throws UserDoesNotExistException {
+		if (!userRepository.existsById(userId)) {
+			throw new UserDoesNotExistException();
+		}
 		return paymentSlipRepository.findByUserId(userId);
 	}
 

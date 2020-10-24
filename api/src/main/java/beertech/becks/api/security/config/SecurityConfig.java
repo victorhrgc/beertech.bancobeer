@@ -5,6 +5,7 @@ import beertech.becks.api.security.service.JwtService;
 import beertech.becks.api.security.service.UserSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -51,6 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/transactions/**/withdrawal").hasAnyRole("ADMIN", "USER")
                 .antMatchers("/transactions/**/transfer").hasAnyRole("ADMIN", "USER")
                 .antMatchers("/users/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/payment-slips").permitAll()
                 .antMatchers("/payment-slips/**").hasAnyRole("ADMIN", "USER")
                 .antMatchers("/banks/**").hasAnyRole("ADMIN", "USER")
 

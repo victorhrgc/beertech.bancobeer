@@ -3,4 +3,4 @@ server:
 
 api:
   endpoint:
-    create-payment-slip: https://beertech-bank.herokuapp.com/transactions/accountCode/deposit
+    create-payment-slip: https://beertech-bank.herokuapp.com/payment-slips

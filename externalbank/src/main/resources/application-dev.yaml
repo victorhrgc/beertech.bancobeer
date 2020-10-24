@@ -14,4 +14,4 @@ spring:
 
 api:
   endpoint:
-    create-payment-slip: https://localhost:8080/transactions/accountCode/deposit
+    create-payment-slip: http://localhost:8080/payment-slips
