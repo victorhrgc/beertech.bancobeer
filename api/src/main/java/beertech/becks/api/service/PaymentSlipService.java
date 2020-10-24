@@ -1,15 +1,18 @@
 package beertech.becks.api.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import beertech.becks.api.entities.PaymentSlip;
+import beertech.becks.api.exception.payment.PaymentSlipExecutionException;
+import beertech.becks.api.tos.request.PaymentSlipRequestTO;
 
 public interface PaymentSlipService {
 
 	List<PaymentSlip> findAll();
 
-	List<PaymentSlip> findByUserDocumentNumber();
+	Optional<PaymentSlip> findByUserDocumentNumber(String documentNumber);
 
-	void executePayment();
+    PaymentSlip executePayment(PaymentSlipRequestTO paymentSlipRequestTO) throws PaymentSlipExecutionException;
 
 }
