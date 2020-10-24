@@ -5,6 +5,7 @@ import beertech.becks.api.entities.PaymentSlip;
 import beertech.becks.api.entities.Transaction;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
+import beertech.becks.api.model.PaymentCategory;
 import beertech.becks.api.model.TypeOperation;
 import beertech.becks.api.repositories.AccountRepository;
 import beertech.becks.api.repositories.TransactionRepository;
@@ -74,7 +75,7 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public Account createTransfer(String accountCode, TransferRequestTO transferRequestTO, TypeOperation typeOperation)
+	public Account createTransfer(String accountCode, TransferRequestTO transferRequestTO, TypeOperation typeOperation, PaymentCategory paymentCategory)
 			throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
 		Account originAccount = findAccountByCode(accountCode);
 		Account destinationAccount = findAccountByCode(transferRequestTO.getDestinationAccountCode());
@@ -86,12 +87,12 @@ public class TransactionServiceImpl implements TransactionService {
 
 		// Debit
 		allTransactionsToSave.add(Transaction.builder().typeOperation(typeOperation).dateTime(currentDate)
-				.paymentCategory(OTHERS).valueTransaction(transferRequestTO.getValue().negate()).accountId(originAccount.getId()).build());
+				.paymentCategory(paymentCategory).valueTransaction(transferRequestTO.getValue().negate()).accountId(originAccount.getId()).build());
 		originAccount.setBalance(originAccount.getBalance().subtract(transferRequestTO.getValue()));
 
 		// Credit
 		allTransactionsToSave.add(Transaction.builder().typeOperation(typeOperation).dateTime(currentDate)
-				.paymentCategory(OTHERS).valueTransaction(transferRequestTO.getValue()).accountId(destinationAccount.getId()).build());
+				.paymentCategory(paymentCategory).valueTransaction(transferRequestTO.getValue()).accountId(destinationAccount.getId()).build());
 		destinationAccount.setBalance(destinationAccount.getBalance().add(transferRequestTO.getValue()));
 
 		transactionRepository.saveAll(allTransactionsToSave);
@@ -110,7 +111,7 @@ public class TransactionServiceImpl implements TransactionService {
 		transferRequestTO.setDestinationAccountCode(paymentSlip.getDestinationAccountCode());
 		transferRequestTO.setValue(paymentSlip.getValue());
 
-		return createTransfer(paymentSlip.getOriginAccountCode(), transferRequestTO, PAGAMENTO);
+		return createTransfer(paymentSlip.getOriginAccountCode(), transferRequestTO, PAGAMENTO, paymentSlip.getCategory());
 	}
 
 	@Override

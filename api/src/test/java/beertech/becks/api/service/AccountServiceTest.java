@@ -38,7 +38,7 @@ public class AccountServiceTest {
 
 	private AccountRequestTO accountRequestTO;
 
-	private String accountCode = "accountCode";
+	private String accountCode = "12345";
 	private Long accountId = 1L;
 	private Long userId = 1L;
 
@@ -132,7 +132,7 @@ public class AccountServiceTest {
 
 	private void givenValidAccountRequestTO() {
 		accountRequestTO = new AccountRequestTO();
-		accountRequestTO.setCode(UUID.randomUUID().toString());
+		accountRequestTO.setCode(accountCode);
 		accountRequestTO.setUserId(UUID.randomUUID().getLeastSignificantBits());
 	}
 

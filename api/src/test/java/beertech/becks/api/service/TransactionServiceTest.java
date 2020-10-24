@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import beertech.becks.api.model.PaymentCategory;
 import beertech.becks.api.model.TypeOperation;
 import org.junit.Before;
 import org.junit.Test;
@@ -135,7 +136,7 @@ public class TransactionServiceTest {
             when(accountRepositoryMock.save(currentAccount)).thenReturn(currentAccount);
             when(accountRepositoryMock.save(destinationAccount)).thenReturn(destinationAccount);
 
-            Account accountTransfer = transactionServiceMock.createTransfer(currentAccount.getCode(), transferRequestTO, TypeOperation.TRANSFERENCIA);
+            Account accountTransfer = transactionServiceMock.createTransfer(currentAccount.getCode(), transferRequestTO, TypeOperation.TRANSFERENCIA, PaymentCategory.OTHERS);
             assertNotNull(accountTransfer);
             assertEquals(accountTransfer.getBalance(), ZERO);
         }
