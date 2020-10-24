@@ -1,17 +1,18 @@
 package beertech.becks.api.controllers;
 
-import beertech.becks.api.exception.payment.PaymentSlipExecutionException;
-import beertech.becks.api.service.PaymentSlipService;
-import beertech.becks.api.tos.request.PaymentSlipRequestTO;
-import io.swagger.annotations.*;
+import static beertech.becks.api.constants.Constants.*;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
-import static beertech.becks.api.constants.Constants.*;
+import beertech.becks.api.exception.payment.PaymentSlipExecutionException;
+import beertech.becks.api.service.PaymentSlipService;
+import beertech.becks.api.tos.request.PaymentRequestTO;
+import io.swagger.annotations.*;
 
 @RestController
 @RequestMapping("/payment-slips")
@@ -21,6 +22,7 @@ public class PaymentSlipController {
 
     @Autowired
     private PaymentSlipService paymentSlipService;
+
 
     @ApiResponses(
             value = {
@@ -54,7 +56,7 @@ public class PaymentSlipController {
             })
     @PostMapping("/{userDocumentNumber}/paymentSlips")
     @ApiOperation(value = "Executing payment", authorizations = @Authorization(value = "JWT"))
-    public ResponseEntity<Object> executePayment(@Valid @RequestBody PaymentSlipRequestTO paymentSlipRequestTO) throws PaymentSlipExecutionException {
-        return new ResponseEntity<>(paymentSlipService.executePayment(paymentSlipRequestTO), HttpStatus.OK);
+    public ResponseEntity<Object> executePayment(@Valid @RequestBody PaymentRequestTO paymentRequestTO) throws PaymentSlipExecutionException {
+        return new ResponseEntity<>(paymentSlipService.executePayment(paymentRequestTO), HttpStatus.OK);
     }
 }

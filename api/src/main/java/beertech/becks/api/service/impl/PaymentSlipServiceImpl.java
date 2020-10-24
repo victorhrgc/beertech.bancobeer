@@ -1,5 +1,7 @@
 package beertech.becks.api.service.impl;
 
+import beertech.becks.api.amqp.RabbitProducer;
+import beertech.becks.api.entities.Bank;
 import beertech.becks.api.entities.PaymentSlip;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
@@ -7,13 +9,15 @@ import beertech.becks.api.exception.payment.PaymentSlipExecutionException;
 import beertech.becks.api.repositories.PaymentSlipRepository;
 import beertech.becks.api.service.PaymentSlipService;
 import beertech.becks.api.service.TransactionService;
-import beertech.becks.api.tos.request.PaymentSlipRequestTO;
+import beertech.becks.api.tos.request.PaymentRequestTO;
 import beertech.becks.api.tos.request.TransferRequestTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class PaymentSlipServiceImpl implements PaymentSlipService {
 
 	@Autowired
@@ -21,6 +25,9 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 
 	@Autowired
 	private TransactionService transactionService;
+
+	@Autowired
+	private RabbitProducer rabbitProducer;
 
 	@Override
 	public List<PaymentSlip> findAll() {
@@ -33,27 +40,32 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 	}
 
 	@Override
-	public PaymentSlip executePayment(PaymentSlipRequestTO paymentSlipRequestTO) throws PaymentSlipExecutionException {
+	public PaymentSlip executePayment(PaymentRequestTO paymentRequestTO) throws PaymentSlipExecutionException {
 
 		// Logica que vai decodificar o "codigo de barras" e vai retornar um PaymentSlip
 		PaymentSlip paymentSlip = new PaymentSlip();
+		paymentSlip.setBank(Bank.builder().code("NotBecks").id(1L).build());
 
 		try {
 
 			if("Becks".equals(paymentSlip.getBank().getCode())) {
 				// Se vazio, entao eh apenas um pagamento da conta atual
-				if(paymentSlipRequestTO.getDestinationAccountCode().isEmpty()) {
-					transactionService.createWithdrawal(paymentSlipRequestTO.getCurrentAccountCode(), paymentSlip.getValue());
-				}
-				else {
+				if(paymentRequestTO.getDestinationAccountCode().isEmpty()) {
+					transactionService.createWithdrawal(paymentRequestTO.getCurrentAccountCode(), paymentSlip.getValue());
+				} else {
 					TransferRequestTO transferRequestTO = new TransferRequestTO();
-					transferRequestTO.setDestinationAccountCode(paymentSlipRequestTO.getDestinationAccountCode());
+					transferRequestTO.setDestinationAccountCode(paymentRequestTO.getDestinationAccountCode());
 					transferRequestTO.setValue(paymentSlip.getValue());
-					transactionService.createTransfer(paymentSlipRequestTO.getCurrentAccountCode(), transferRequestTO);
+					transactionService.createTransfer(paymentRequestTO.getCurrentAccountCode(), transferRequestTO);
 				}
-			}
-			else {
-				// Logica quando for banco externo
+			} else {
+				if(!rabbitProducer.produceBlockingMessageSuccessfully(paymentRequestTO)) {
+					//TODO fazer rollback do debito
+					System.out.println("Erro!");
+				} else {
+					//TODO deletar depois, apenas para testes
+					System.out.println("Sucesso!");
+				}
 			}
 		}
 		catch(AccountDoesNotExistsException | AccountDoesNotHaveEnoughBalanceException e) {

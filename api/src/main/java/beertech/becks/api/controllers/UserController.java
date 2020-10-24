@@ -4,17 +4,19 @@ import static beertech.becks.api.constants.Constants.*;
 
 import javax.validation.Valid;
 
-import beertech.becks.api.amqp.RabbitProducer;
-import beertech.becks.api.tos.request.PaymentRequestTO;
-import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import beertech.becks.api.amqp.RabbitProducer;
 import beertech.becks.api.exception.user.UserAlreadyExistsException;
 import beertech.becks.api.service.UserService;
 import beertech.becks.api.tos.request.UserRequestTO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -40,13 +42,5 @@ public class UserController {
 			throws UserAlreadyExistsException {
 		log.info("create user");
 		return new ResponseEntity<>(userService.createUser(userRequestTO), HttpStatus.CREATED);
-	}
-
-	@GetMapping
-	public void teste() {
-		PaymentRequestTO to = PaymentRequestTO.builder().code("CodigoFicticio").jwtToken("JwtToken").build();
-
-		//producer.produceBlocking(to);
-		producer.produceNonBlockingWithCallback(to);
 	}
 }

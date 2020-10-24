@@ -15,11 +15,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Configuration
 public class RabbitConfiguration {
-
-	@Bean
-	public AsyncRabbitTemplate asyncRabbitTemplate() {
-		return new AsyncRabbitTemplate(rabbitTemplate());
-	}
+	@Autowired
+	private ConnectionFactory connectionFactory;
 
 	private RabbitTemplate rabbitTemplate() {
 		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
@@ -27,8 +24,10 @@ public class RabbitConfiguration {
 		return rabbitTemplate;
 	}
 
-	@Autowired
-	private ConnectionFactory connectionFactory;
+	@Bean
+	public AsyncRabbitTemplate asyncRabbitTemplate() {
+		return new AsyncRabbitTemplate(rabbitTemplate());
+	}
 
 	@Bean
 	MessageConverter jacksonConverter() {

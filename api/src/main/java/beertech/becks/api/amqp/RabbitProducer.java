@@ -2,6 +2,7 @@ package beertech.becks.api.amqp;
 
 import java.util.concurrent.ExecutionException;
 
+import beertech.becks.api.tos.request.PaymentRequestTO;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.rabbit.AsyncRabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
-import beertech.becks.api.tos.request.PaymentRequestTO;
 import beertech.becks.api.tos.response.PaymentResponseTO;
 
 @Component
@@ -26,23 +26,21 @@ public class RabbitProducer {
 	@Autowired
 	private AsyncRabbitTemplate rabbitTemplate;
 
-	public void produceBlocking(PaymentRequestTO to) {
+	public boolean produceBlockingMessageSuccessfully(PaymentRequestTO to) {
 		try {
 			ListenableFuture<PaymentResponseTO> listenableFuture = rabbitTemplate.convertSendAndReceiveAsType(exchange,
 					routingKey, to, new ParameterizedTypeReference<PaymentResponseTO>() {
 					});
 
-			try {
-				PaymentResponseTO resp = listenableFuture.get();
-				// TODO
-				System.out.println("Esperou a chamada bloqueante com sucesso!");
-			} catch (InterruptedException | ExecutionException e) {
-				// TODO
-				System.out.println("Esperou a chamada bloqueante com erro!");
+			PaymentResponseTO resp = listenableFuture.get();
+			if (resp.getStatus().toUpperCase().equals("ERRO")) {
+				return false;
 			}
+
 		} catch (Exception e) {
-			throw new AmqpRejectAndDontRequeueException(e);
+			return false;
 		}
+		return true;
 	}
 
 	public void produceNonBlockingWithCallback(PaymentRequestTO to) {
