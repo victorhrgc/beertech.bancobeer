@@ -1,5 +1,6 @@
 package beertech.becks.api.exception;
 
+import beertech.becks.api.exception.bank.BankAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -48,6 +49,12 @@ public class ExceptionHandler {
 	public ResponseEntity<ErrorResponseTO> handleAccountDoesNotHaveEnoughBalanceException(
 			AccountDoesNotHaveEnoughBalanceException ex) {
 		return new ResponseEntity<>(new ErrorResponseTO("No balance available for transaction"), HttpStatus.OK);
+	}
+
+	@org.springframework.web.bind.annotation.ExceptionHandler(BankAlreadyExistsException.class)
+	public ResponseEntity<ErrorResponseTO> handleBankAlreadyExistsException(BankAlreadyExistsException ex) {
+		return new ResponseEntity<>(new ErrorResponseTO("Bank with code " + ex.getMessage() + " already exists"),
+				HttpStatus.OK);
 	}
 
 }

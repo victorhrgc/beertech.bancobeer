@@ -51,6 +51,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/transactions/**/withdrawal").hasAnyRole("ADMIN", "USER")
                 .antMatchers("/transactions/**/transfer").hasAnyRole("ADMIN", "USER")
                 .antMatchers("/users/**").permitAll()
+                .antMatchers("/payment-slips/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/banks/**").hasAnyRole("ADMIN", "USER")
 
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
