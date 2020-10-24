@@ -4,7 +4,9 @@ import static beertech.becks.api.constants.Constants.STATUS_200_GET_OK;
 import static beertech.becks.api.constants.Constants.STATUS_404_NOT_FOUND;
 import static beertech.becks.api.constants.Constants.STATUS_500_INTERNAL_SERVER_ERROR;
 
-import beertech.becks.api.exception.payment.PaymentSlipExecutionException;
+import beertech.becks.api.exception.account.AccountDoesNotExistsException;
+import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
+import beertech.becks.api.exception.paymentslip.PaymentSlipDoesNotExistsException;
 import beertech.becks.api.exception.user.UserDoesNotExistException;
 import beertech.becks.api.service.PaymentSlipService;
 import beertech.becks.api.tos.request.PaymentSlipTO;
@@ -66,9 +68,11 @@ public class PaymentSlipController {
             })
     @PostMapping("/code/{paymentSlipCode}")
     @ApiOperation(value = "Pay payment slip", authorizations = @Authorization(value = "JWT"))
-    public ResponseEntity<Object> executePayment(@PathVariable String paymentSlipCode) throws PaymentSlipExecutionException {
-        return new ResponseEntity<>(paymentSlipService.executePayment(paymentSlipCode), HttpStatus.OK);
-    }
+	public ResponseEntity<Object> executePayment(@PathVariable String paymentSlipCode)
+			throws AccountDoesNotHaveEnoughBalanceException, PaymentSlipDoesNotExistsException,
+			AccountDoesNotExistsException {
+		return new ResponseEntity<>(paymentSlipService.executePayment(paymentSlipCode), HttpStatus.OK);
+	}
 
   @ApiResponses(
       value = {

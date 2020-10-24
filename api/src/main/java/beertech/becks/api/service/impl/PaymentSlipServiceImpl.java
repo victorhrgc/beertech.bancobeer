@@ -1,19 +1,21 @@
 package beertech.becks.api.service.impl;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import beertech.becks.api.amqp.RabbitProducer;
 import beertech.becks.api.converter.PaymentSlipConverter;
 import beertech.becks.api.entities.PaymentSlip;
-import beertech.becks.api.exception.payment.PaymentSlipExecutionException;
+import beertech.becks.api.exception.account.AccountDoesNotExistsException;
+import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
+import beertech.becks.api.exception.paymentslip.PaymentSlipDoesNotExistsException;
 import beertech.becks.api.exception.user.UserDoesNotExistException;
 import beertech.becks.api.repositories.PaymentSlipRepository;
 import beertech.becks.api.repositories.UserRepository;
 import beertech.becks.api.service.PaymentSlipService;
 import beertech.becks.api.service.TransactionService;
-import beertech.becks.api.tos.request.TransactionPaymentRequestTO;
-import java.util.List;
-import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class PaymentSlipServiceImpl implements PaymentSlipService {
@@ -23,9 +25,9 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 
 	@Autowired
 	private PaymentSlipRepository paymentSlipRepository;
-	
+
 	@Autowired
-	private UserRepository userRepository; 
+	private UserRepository userRepository;
 
 	@Autowired
 	private TransactionService transactionService;
@@ -47,32 +49,18 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 	}
 
 	@Override
-	public PaymentSlip executePayment(String paymentCode) throws PaymentSlipExecutionException {
+	public PaymentSlip executePayment(String paymentCode) throws PaymentSlipDoesNotExistsException,
+			AccountDoesNotHaveEnoughBalanceException, AccountDoesNotExistsException {
 
-		PaymentSlip paymentSlip = paymentSlipRepository.findByCode(paymentCode).orElseThrow(PaymentSlipExecutionException::new);
+		PaymentSlip paymentSlip = paymentSlipRepository.findByCode(paymentCode)
+				.orElseThrow(PaymentSlipDoesNotExistsException::new);
 
-		try {
-			if("001".equals(paymentSlip.getDestinationBankCode())) {
-
-				TransactionPaymentRequestTO transactionPaymentRequestTO = new TransactionPaymentRequestTO();
-				transactionPaymentRequestTO.setCurrentAccountCode(paymentSlip.getOriginAccountCode());
-				transactionPaymentRequestTO.setDestinationAccountCode(paymentSlip.getDestinationAccountCode());
-				transactionPaymentRequestTO.setValue(paymentSlip.getValue());
-
-				transactionService.createPayment(transactionPaymentRequestTO);
-
-			} else {
-				if(!rabbitProducer.produceBlockingMessageSuccessfully(paymentCode)) {
-					//TODO fazer rollback do debito
-					System.out.println("Erro!");
-				} else {
-					//TODO deletar depois, apenas para testes
-					System.out.println("Sucesso!");
-				}
+		if ("001".equals(paymentSlip.getDestinationBankCode())) {
+			transactionService.createPayment(paymentSlip);
+		} else { // Banco externo
+			if (rabbitProducer.produceBlockingMessageSuccessfully(paymentCode)) {
+				transactionService.createPaymentToExternalBank(paymentSlip);
 			}
-		}
-		catch(Exception e) {
-			throw new PaymentSlipExecutionException(); // repensar essa forma de tratar a exception
 		}
 
 		return paymentSlip;

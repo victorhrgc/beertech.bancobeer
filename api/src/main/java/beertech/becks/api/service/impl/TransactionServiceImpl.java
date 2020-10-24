@@ -1,6 +1,7 @@
 package beertech.becks.api.service.impl;
 
 import beertech.becks.api.entities.Account;
+import beertech.becks.api.entities.PaymentSlip;
 import beertech.becks.api.entities.Transaction;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
@@ -9,7 +10,6 @@ import beertech.becks.api.repositories.AccountRepository;
 import beertech.becks.api.repositories.TransactionRepository;
 import beertech.becks.api.service.AccountService;
 import beertech.becks.api.service.TransactionService;
-import beertech.becks.api.tos.request.TransactionPaymentRequestTO;
 import beertech.becks.api.tos.request.TransferRequestTO;
 import beertech.becks.api.tos.response.StatementResponseTO;
 import org.springframework.stereotype.Service;
@@ -105,25 +105,26 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public Account createPayment(TransactionPaymentRequestTO transactionPaymentRequestTO) throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
-
+	public Account createPayment(PaymentSlip paymentSlip) throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
 		TransferRequestTO transferRequestTO = new TransferRequestTO();
-		transferRequestTO.setDestinationAccountCode(transactionPaymentRequestTO.getDestinationAccountCode());
-		transferRequestTO.setValue(transactionPaymentRequestTO.getValue());
+		transferRequestTO.setDestinationAccountCode(paymentSlip.getDestinationAccountCode());
+		transferRequestTO.setValue(paymentSlip.getValue());
 
-		return createTransfer(transactionPaymentRequestTO.getCurrentAccountCode(), transferRequestTO, PAGAMENTO);
+		return createTransfer(paymentSlip.getOriginAccountCode(), transferRequestTO, PAGAMENTO);
 	}
 
 	@Override
-	public Account createPaymentToExternalBank(TransactionPaymentRequestTO transactionPaymentRequestTO) throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
+	public Account createPaymentToExternalBank(PaymentSlip paymentSlip)
+			throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
 
-		Account account = findAccountByCode(transactionPaymentRequestTO.getCurrentAccountCode());
-		accountService.checkAvailableBalance(account.getBalance(), transactionPaymentRequestTO.getValue());
+		Account account = findAccountByCode(paymentSlip.getOriginAccountCode());
+		accountService.checkAvailableBalance(account.getBalance(), paymentSlip.getValue());
 
-		transactionRepository.save(Transaction.builder().typeOperation(PAGAMENTO).paymentCategory(transactionPaymentRequestTO.getPaymentCategory())
-				.dateTime(now()).valueTransaction(transactionPaymentRequestTO.getValue().negate()).accountId(account.getId()).build());
+		transactionRepository.save(Transaction.builder().typeOperation(PAGAMENTO)
+				.paymentCategory(paymentSlip.getCategory()).dateTime(now())
+				.valueTransaction(paymentSlip.getValue().negate()).accountId(account.getId()).build());
 
-		account.setBalance(account.getBalance().subtract(transactionPaymentRequestTO.getValue()));
+		account.setBalance(account.getBalance().subtract(paymentSlip.getValue()));
 		accountRepository.save(account);
 
 		return account;
