@@ -6,6 +6,7 @@ import static beertech.becks.api.constants.Constants.STATUS_500_INTERNAL_SERVER_
 
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
+import beertech.becks.api.exception.payment.PaymentNotDoneException;
 import beertech.becks.api.exception.paymentslip.PaymentSlipDoesNotExistsException;
 import beertech.becks.api.exception.user.UserDoesNotExistException;
 import beertech.becks.api.service.PaymentSlipService;
@@ -70,8 +71,9 @@ public class PaymentSlipController {
     @ApiOperation(value = "Pay payment slip", authorizations = @Authorization(value = "JWT"))
 	public ResponseEntity<Object> executePayment(@PathVariable String paymentSlipCode)
 			throws AccountDoesNotHaveEnoughBalanceException, PaymentSlipDoesNotExistsException,
-			AccountDoesNotExistsException {
-		return new ResponseEntity<>(paymentSlipService.executePayment(paymentSlipCode), HttpStatus.OK);
+			AccountDoesNotExistsException, PaymentNotDoneException {
+		paymentSlipService.executePayment(paymentSlipCode);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
   @ApiResponses(

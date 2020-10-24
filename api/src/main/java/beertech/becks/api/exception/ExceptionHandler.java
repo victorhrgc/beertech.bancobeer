@@ -1,5 +1,6 @@
 package beertech.becks.api.exception;
 
+import beertech.becks.api.exception.payment.PaymentNotDoneException;
 import beertech.becks.api.exception.paymentslip.PaymentSlipDoesNotExistsException;
 import beertech.becks.api.exception.paymentslip.PaymentSlipRegisterException;
 import org.springframework.http.HttpStatus;
@@ -81,9 +82,14 @@ public class ExceptionHandler {
 	}
 
 	@org.springframework.web.bind.annotation.ExceptionHandler(PaymentSlipRegisterException.class)
-	public ResponseEntity<ErrorResponseTO> handlePaymentSlipRegisterException(
-			PaymentSlipRegisterException ex) {
+	public ResponseEntity<ErrorResponseTO> handlePaymentSlipRegisterException(PaymentSlipRegisterException ex) {
 		return new ResponseEntity<>(new ErrorResponseTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
+	}
+
+	@org.springframework.web.bind.annotation.ExceptionHandler(PaymentNotDoneException.class)
+	public ResponseEntity<ErrorResponseTO> handlePaymentNotDoneException(PaymentNotDoneException ex) {
+		return new ResponseEntity<>(new ErrorResponseTO("Couldn't execute payment: Error on external system"),
+				HttpStatus.OK);
 	}
 
 }

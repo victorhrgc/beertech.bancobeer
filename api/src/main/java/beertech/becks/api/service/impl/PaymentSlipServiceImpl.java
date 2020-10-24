@@ -2,6 +2,7 @@ package beertech.becks.api.service.impl;
 
 import java.util.List;
 
+import beertech.becks.api.exception.payment.PaymentNotDoneException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,8 +50,8 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 	}
 
 	@Override
-	public PaymentSlip executePayment(String paymentCode) throws PaymentSlipDoesNotExistsException,
-			AccountDoesNotHaveEnoughBalanceException, AccountDoesNotExistsException {
+	public void executePayment(String paymentCode) throws PaymentSlipDoesNotExistsException,
+			AccountDoesNotHaveEnoughBalanceException, AccountDoesNotExistsException, PaymentNotDoneException {
 
 		PaymentSlip paymentSlip = paymentSlipRepository.findByCode(paymentCode)
 				.orElseThrow(PaymentSlipDoesNotExistsException::new);
@@ -60,10 +61,10 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 		} else { // Banco externo
 			if (rabbitProducer.produceBlockingMessageSuccessfully(paymentCode)) {
 				transactionService.createPaymentToExternalBank(paymentSlip);
+			} else {
+				throw new PaymentNotDoneException();
 			}
 		}
-
-		return paymentSlip;
 	}
 
 	@Override

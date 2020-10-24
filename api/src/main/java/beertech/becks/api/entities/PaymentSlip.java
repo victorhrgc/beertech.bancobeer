@@ -50,4 +50,6 @@ public class PaymentSlip implements Serializable {
     @Column(name = "CATEGORY")
     private PaymentCategory category;
 
+    //@Column(name = "PAYED")
+    //private Integer payed;
 }

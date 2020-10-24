@@ -24,8 +24,9 @@ public class RabbitProducer {
 
 	public boolean produceBlockingMessageSuccessfully(String paymentCode) {
 		try {
+			String json = "{\"code\":\"" + paymentCode + "\"}";
 			ListenableFuture<PaymentResponseTO> listenableFuture = rabbitTemplate.convertSendAndReceiveAsType(exchange,
-					routingKey, paymentCode, new ParameterizedTypeReference<PaymentResponseTO>() {
+					routingKey, json, new ParameterizedTypeReference<PaymentResponseTO>() {
 					});
 
 			PaymentResponseTO resp = listenableFuture.get();

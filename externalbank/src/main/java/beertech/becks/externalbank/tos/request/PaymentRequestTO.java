@@ -8,8 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentRequestTO {
-
-    private String code;
-    private String jwtToken;
-
+	private String code;
 }
