@@ -104,8 +104,8 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 			becksBank.ifPresent(bank -> originUser.setBankName(bank.getName()));
 
 			// Monta usuario destino
-			PaymentSlipUserTO destinationUser = PaymentSlipUserTO.builder().accountCode(slip.getOriginAccountCode())
-					.build();
+			PaymentSlipUserTO destinationUser = PaymentSlipUserTO.builder()
+					.accountCode(slip.getDestinationAccountCode()).build();
 			destinationBank.ifPresent(bank -> destinationUser.setBankName(bank.getName()));
 
 			if (slip.getDestinationBankCode().equals("001")) {
