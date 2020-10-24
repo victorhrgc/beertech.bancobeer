@@ -1,6 +1,18 @@
 server:
   port: ${PORT:8082}
 
+spring:
+  rabbitmq:
+    addresses: ${CLOUDAMQP_URL:localhost}
+
+    exchange: payment.externalbank.exchange
+
+    queue:
+      payment: payment.queue
+
+    routingkey:
+      payment: payment.rk
+
 api:
   endpoint:
     create-payment-slip: https://beertech-bank.herokuapp.com/payment-slips
