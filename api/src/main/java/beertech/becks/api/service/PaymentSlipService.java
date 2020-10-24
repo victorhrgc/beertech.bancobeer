@@ -11,7 +11,7 @@ public interface PaymentSlipService {
 
 	List<PaymentSlip> findAll();
 
-	Optional<PaymentSlip> findByUserDocumentNumber(String documentNumber);
+	Optional<PaymentSlip> findByUserId(Long userId);
 
     PaymentSlip executePayment(PaymentRequestTO paymentRequestTO) throws PaymentSlipExecutionException;
 

@@ -42,10 +42,10 @@ public class PaymentSlipController {
                     @ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
                     @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
             })
-    @GetMapping("/{userDocumentNumber}/paymentSlipsByUser")
+    @GetMapping("/{userId}/paymentSlipsByUser")
     @ApiOperation(value = "Get payment slips by user document number", authorizations = @Authorization(value = "JWT"))
-    public ResponseEntity<Object> getPaymentSlipsByUserDocumentNumber(@PathVariable String userDocumentNumber) {
-        return new ResponseEntity<>(paymentSlipService.findByUserDocumentNumber(userDocumentNumber), HttpStatus.OK);
+    public ResponseEntity<Object> getPaymentSlipsByUserDocumentNumber(@PathVariable Long userId) {
+        return new ResponseEntity<>(paymentSlipService.findByUserId(userId), HttpStatus.OK);
     }
 
     @ApiResponses(
@@ -54,7 +54,7 @@ public class PaymentSlipController {
                     @ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
                     @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
             })
-    @PostMapping("/{userDocumentNumber}/paymentSlips")
+    @PostMapping("/{userId}/paymentSlips")
     @ApiOperation(value = "Executing payment", authorizations = @Authorization(value = "JWT"))
     public ResponseEntity<Object> executePayment(@Valid @RequestBody PaymentRequestTO paymentRequestTO) throws PaymentSlipExecutionException {
         return new ResponseEntity<>(paymentSlipService.executePayment(paymentRequestTO), HttpStatus.OK);

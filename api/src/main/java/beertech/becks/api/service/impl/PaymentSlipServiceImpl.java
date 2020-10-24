@@ -35,8 +35,8 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 	}
 
 	@Override
-	public Optional<PaymentSlip> findByUserDocumentNumber(String documentNumber) {
-		return paymentSlipRepository.findByUserDocumentNumber(documentNumber);
+	public Optional<PaymentSlip> findByUserId(Long userId) {
+		return paymentSlipRepository.findByUserId(userId);
 	}
 
 	@Override

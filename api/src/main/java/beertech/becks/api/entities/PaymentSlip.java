@@ -31,16 +31,13 @@ public class PaymentSlip implements Serializable {
     @Column(name = "VALUE")
     private BigDecimal value;
 
-    @Column(name = "FK_USER_DOCUMENT_NUMBER")
-    private String userDocumentNumber;
+    @Column(name = "FK_USER_ID")
+    private String userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FK_USER_DOCUMENT_NUMBER", insertable = false, updatable = false)
+    @JoinColumn(name = "FK_USER_ID", insertable = false, updatable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User user;
-
-    @Column(name = "DESTINATION_DOCUMENT_NUMBER")
-    private String userDestinationDocumentNumber;
 
     @Column(name = "FK_BANK_CODE")
     private String bankCode;
