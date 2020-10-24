@@ -4,6 +4,7 @@ import beertech.becks.api.entities.Account;
 import beertech.becks.api.entities.Transaction;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
+import beertech.becks.api.model.TypeOperation;
 import beertech.becks.api.repositories.AccountRepository;
 import beertech.becks.api.repositories.TransactionRepository;
 import beertech.becks.api.service.AccountService;
@@ -72,7 +73,7 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public Account createTransfer(String accountCode, TransferRequestTO transferRequestTO)
+	public Account createTransfer(String accountCode, TransferRequestTO transferRequestTO, TypeOperation typeOperation)
 			throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
 		Account originAccount = findAccountByCode(accountCode);
 		Account destinationAccount = findAccountByCode(transferRequestTO.getDestinationAccountCode());
@@ -83,12 +84,12 @@ public class TransactionServiceImpl implements TransactionService {
 		LocalDateTime currentDate = now();
 
 		// Debit
-		allTransactionsToSave.add(Transaction.builder().typeOperation(transferRequestTO.getTypeOperation()).dateTime(currentDate)
+		allTransactionsToSave.add(Transaction.builder().typeOperation(typeOperation).dateTime(currentDate)
 				.valueTransaction(transferRequestTO.getValue().negate()).accountId(originAccount.getId()).build());
 		originAccount.setBalance(originAccount.getBalance().subtract(transferRequestTO.getValue()));
 
 		// Credit
-		allTransactionsToSave.add(Transaction.builder().typeOperation(transferRequestTO.getTypeOperation()).dateTime(currentDate)
+		allTransactionsToSave.add(Transaction.builder().typeOperation(typeOperation).dateTime(currentDate)
 				.valueTransaction(transferRequestTO.getValue()).accountId(destinationAccount.getId()).build());
 		destinationAccount.setBalance(destinationAccount.getBalance().add(transferRequestTO.getValue()));
 
@@ -108,9 +109,8 @@ public class TransactionServiceImpl implements TransactionService {
 		TransferRequestTO transferRequestTO = new TransferRequestTO();
 		transferRequestTO.setDestinationAccountCode(transactionPaymentRequestTO.getDestinationAccountCode());
 		transferRequestTO.setValue(transactionPaymentRequestTO.getValue());
-		transferRequestTO.setTypeOperation(PAGAMENTO);
 
-		return createTransfer(transactionPaymentRequestTO.getCurrentAccountCode(), transferRequestTO);
+		return createTransfer(transactionPaymentRequestTO.getCurrentAccountCode(), transferRequestTO, PAGAMENTO);
 	}
 
 

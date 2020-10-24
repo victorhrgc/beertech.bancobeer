@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import beertech.becks.api.entities.Account;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
+import beertech.becks.api.model.TypeOperation;
 import beertech.becks.api.tos.request.TransactionPaymentRequestTO;
 import beertech.becks.api.tos.request.TransactionRequestTO;
 import beertech.becks.api.tos.request.TransferRequestTO;
@@ -17,7 +18,7 @@ public interface TransactionService {
 	Account createWithdrawal(String accountCode, BigDecimal value)
 			throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException;
 
-	Account createTransfer(String accountCode, TransferRequestTO transferRequestTO)
+	Account createTransfer(String accountCode, TransferRequestTO transferRequestTO, TypeOperation typeOperation)
 			throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException;
 
 	Account createPayment(TransactionPaymentRequestTO transactionPaymentRequestTO)

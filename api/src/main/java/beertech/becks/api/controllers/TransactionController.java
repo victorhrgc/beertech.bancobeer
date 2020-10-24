@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 
 import javax.validation.Valid;
 
+import beertech.becks.api.model.TypeOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -67,7 +68,7 @@ public class TransactionController {
 	public ResponseEntity<Account> createTransfer(@PathVariable String accountCode,
 			@Valid @RequestBody TransferRequestTO transferRequestTO)
 			throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
-		return new ResponseEntity<>(transactionService.createTransfer(accountCode, transferRequestTO), CREATED);
+		return new ResponseEntity<>(transactionService.createTransfer(accountCode, transferRequestTO, TypeOperation.TRANSFERENCIA), CREATED);
 	}
 
 }

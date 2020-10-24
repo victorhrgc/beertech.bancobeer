@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import beertech.becks.api.model.TypeOperation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -134,7 +135,7 @@ public class TransactionServiceTest {
             when(accountRepositoryMock.save(currentAccount)).thenReturn(currentAccount);
             when(accountRepositoryMock.save(destinationAccount)).thenReturn(destinationAccount);
 
-            Account accountTransfer = transactionServiceMock.createTransfer(currentAccount.getCode(), transferRequestTO);
+            Account accountTransfer = transactionServiceMock.createTransfer(currentAccount.getCode(), transferRequestTO, TypeOperation.TRANSFERENCIA);
             assertNotNull(accountTransfer);
             assertEquals(accountTransfer.getBalance(), ZERO);
         }

@@ -29,6 +29,4 @@ public class TransferRequestTO {
 	@NotNull(message = "The destination account code is mandatory")
 	@ApiModelProperty(required = true)
 	private String destinationAccountCode;
-
-	private TypeOperation typeOperation;
 }
