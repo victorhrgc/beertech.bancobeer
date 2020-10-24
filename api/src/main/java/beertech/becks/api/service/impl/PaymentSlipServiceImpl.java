@@ -116,7 +116,7 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 
 			ret.add(PaymentSlipResponseTO.builder().code(slip.getCode()).dueDate(slip.getDueDate())
 					.value(slip.getValue()).id(slip.getId()).originUser(originUser).destinationUser(destinationUser)
-					.build());
+					.category(slip.getCategory()).build());
 
 		});
 		return ret;

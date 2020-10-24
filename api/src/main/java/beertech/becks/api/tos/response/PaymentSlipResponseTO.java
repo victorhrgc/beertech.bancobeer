@@ -1,5 +1,6 @@
 package beertech.becks.api.tos.response;
 
+import beertech.becks.api.model.PaymentCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,8 @@ public class PaymentSlipResponseTO {
 	private String code;
 	private LocalDate dueDate;
 	private BigDecimal value;
+	private PaymentCategory category;
 	private PaymentSlipUserTO originUser;
 	private PaymentSlipUserTO destinationUser;
+
 }
