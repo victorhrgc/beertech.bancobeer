@@ -3,13 +3,8 @@ package beertech.becks.externalbank.services.impl;
 import beertech.becks.externalbank.services.ExternalBankService;
 import beertech.becks.externalbank.tos.messages.PaymentMessage;
 import beertech.becks.externalbank.tos.response.PaymentResponseTO;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
