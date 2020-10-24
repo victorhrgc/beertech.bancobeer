@@ -27,6 +27,7 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 
 		String ret = client.method(HttpMethod.POST).body(BodyInserters.fromValue(requestJson))
 				.header("Content-Type", "application/json").exchange().block().bodyToMono(String.class).block();
+		System.out.println(ret);
 	}
 
 	private String encode(PaymentSlipRequestTO to) {

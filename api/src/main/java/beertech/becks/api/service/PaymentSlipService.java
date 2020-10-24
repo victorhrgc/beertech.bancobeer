@@ -9,12 +9,13 @@ import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceExcep
 import beertech.becks.api.exception.payment.PaymentNotDoneException;
 import beertech.becks.api.exception.paymentslip.PaymentSlipDoesNotExistsException;
 import beertech.becks.api.exception.user.UserDoesNotExistException;
+import beertech.becks.api.tos.response.PaymentSlipResponseTO;
 
 public interface PaymentSlipService {
 
-	List<PaymentSlip> findAll();
+	List<PaymentSlipResponseTO> findAll();
 
-	List<PaymentSlip> findByUserId(Long userId) throws UserDoesNotExistException;
+	List<PaymentSlipResponseTO> findByUserId(Long userId) throws UserDoesNotExistException;
 
 	void executePayment(String paymentCode) throws PaymentSlipDoesNotExistsException,
 			AccountDoesNotHaveEnoughBalanceException, AccountDoesNotExistsException, PaymentNotDoneException;

@@ -74,8 +74,8 @@ public class PaymentSlipConverter {
     if (splited[0].matches("[0-9]{8}")
         && splited[1].matches("[0-9]{6}")
         && splited[2].matches("[A-Z]{2}")
-        && splited[3].matches("[0-9]{3}/[0-9]{5}")
-        && splited[4].matches("[0-9]{3}/[0-9]{5}")) {
+        && splited[3].matches("[0-9]{3}/[0-9A-Za-z]{5}")
+        && splited[4].matches("[0-9]{3}/[0-9A-za-z]{5}")) {
       return true;
     }
     return false;

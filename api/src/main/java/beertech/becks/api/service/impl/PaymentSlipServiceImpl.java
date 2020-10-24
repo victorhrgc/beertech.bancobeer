@@ -1,8 +1,17 @@
 package beertech.becks.api.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import beertech.becks.api.entities.Account;
+import beertech.becks.api.entities.Bank;
 import beertech.becks.api.exception.payment.PaymentNotDoneException;
+import beertech.becks.api.repositories.AccountRepository;
+import beertech.becks.api.repositories.BankRepository;
+import beertech.becks.api.tos.response.PaymentResponseTO;
+import beertech.becks.api.tos.response.PaymentSlipResponseTO;
+import beertech.becks.api.tos.response.PaymentSlipUserTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,22 +40,29 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 	private UserRepository userRepository;
 
 	@Autowired
+	private BankRepository bankRepository;
+
+	@Autowired
+	private AccountRepository accountRepository;
+
+	@Autowired
 	private TransactionService transactionService;
 
 	@Autowired
 	private RabbitProducer rabbitProducer;
 
 	@Override
-	public List<PaymentSlip> findAll() {
-		return paymentSlipRepository.findAll();
+	public List<PaymentSlipResponseTO> findAll() {
+		return convertToPaymentSlipResponseTO(paymentSlipRepository.findAll());
 	}
 
 	@Override
-	public List<PaymentSlip> findByUserId(Long userId) throws UserDoesNotExistException {
+	public List<PaymentSlipResponseTO> findByUserId(Long userId) throws UserDoesNotExistException {
 		if (!userRepository.existsById(userId)) {
 			throw new UserDoesNotExistException();
 		}
-		return paymentSlipRepository.findByUserId(userId);
+
+		return convertToPaymentSlipResponseTO(paymentSlipRepository.findByUserId(userId));
 	}
 
 	@Override
@@ -71,5 +87,38 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 	public void decodeAndSave(String code) throws Exception {
 		PaymentSlip paymentSlip = converter.codeToPaymentSlip(code);
 		paymentSlipRepository.save(paymentSlip);
+	}
+
+	private List<PaymentSlipResponseTO> convertToPaymentSlipResponseTO(List<PaymentSlip> paymentSlips) {
+		List<PaymentSlipResponseTO> ret = new ArrayList<>();
+
+		Optional<Bank> becksBank = bankRepository.findByCode("001");
+
+		paymentSlips.forEach(slip -> {
+
+			Optional<Bank> destinationBank = bankRepository.findByCode(slip.getDestinationBankCode());
+
+			// Monta usuario origem
+			PaymentSlipUserTO originUser = PaymentSlipUserTO.builder().userName(slip.getUser().getName())
+					.accountCode(slip.getOriginAccountCode()).build();
+			becksBank.ifPresent(bank -> originUser.setBankName(bank.getName()));
+
+			// Monta usuario destino
+			PaymentSlipUserTO destinationUser = PaymentSlipUserTO.builder().accountCode(slip.getOriginAccountCode())
+					.build();
+			destinationBank.ifPresent(bank -> destinationUser.setBankName(bank.getName()));
+
+			if (slip.getDestinationBankCode().equals("001")) {
+				Optional<Account> destinationUserAccount = accountRepository
+						.findByCode(slip.getDestinationAccountCode());
+				destinationUserAccount.ifPresent(account -> destinationUser.setUserName(account.getUser().getName()));
+			}
+
+			ret.add(PaymentSlipResponseTO.builder().code(slip.getCode()).dueDate(slip.getDueDate())
+					.value(slip.getValue()).id(slip.getId()).originUser(originUser).destinationUser(destinationUser)
+					.build());
+
+		});
+		return ret;
 	}
 }
