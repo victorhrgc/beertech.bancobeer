@@ -2,12 +2,15 @@ package beertech.becks.externalbank.services.impl;
 
 import beertech.becks.externalbank.services.ExternalBankService;
 import beertech.becks.externalbank.tos.messages.PaymentMessage;
+import beertech.becks.externalbank.tos.response.PaymentResponseTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
 /**
@@ -16,36 +19,21 @@ import java.util.logging.Logger;
 @Service
 public class ExternalBankServiceImpl implements ExternalBankService {
 
-    /**
-     * Logger
-     */
-    private static final Logger LOGGER = Logger.getLogger(ExternalBankServiceImpl.class.getName());
+	/**
+	 * Logger
+	 */
+	private static final Logger LOGGER = Logger.getLogger(ExternalBankServiceImpl.class.getName());
 
-    /**
-     * The API endpoints
-     */
+	@Override
+	public PaymentResponseTO treatPaymentSlipMessage(PaymentMessage message) {
+		PaymentResponseTO resp = new PaymentResponseTO();
+		if (LocalDateTime.now().getMinute() % 2 == 0) {
+			resp.setStatus("Erro");
+		} else {
+			resp.setStatus("Sucesso");
+		}
 
-    @Value("${api.endpoint.payment-slips}")
-    private String paymentSlipEndpoint;
-
-    @Override
-    public void treatPaymentSlipMessage(PaymentMessage message) {
-        String completeEndpoint = paymentSlipEndpoint.replaceAll("code", message.getCode()) ;
-
-        System.out.println(callApi(completeEndpoint, HttpMethod.POST, message.getJwtToken(), null));
-    }
-
-    private String callApi(String completeEndpoint, HttpMethod method, String jwtToken, String jsonBody) {
-        WebClient client = WebClient.create(completeEndpoint);
-
-        if (jsonBody != null) {
-            return client.method(HttpMethod.POST).body(BodyInserters.fromValue(jsonBody))
-                    .header("Authorization", "Bearer " + jwtToken).header("Content-Type", "application/json").exchange()
-                    .block().bodyToMono(String.class).block();
-        }
-
-        return client.method(method).header("Authorization", "Bearer " + jwtToken).exchange().block()
-                .bodyToMono(String.class).block();
-    }
+		return resp;
+	}
 
 }

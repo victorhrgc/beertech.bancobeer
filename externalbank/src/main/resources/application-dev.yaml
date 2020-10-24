@@ -1,9 +1,6 @@
 server:
   port: 8082
 
-api:
-  endpoint:
-    payment: http://localhost:8080/payment-slips/code
 
 spring:
   rabbitmq:

@@ -20,6 +20,18 @@ spring:
     username: ${JDBC_DATABASE_USERNAME}
     password: ${JDBC_DATABASE_PASSWORD}
 
+  rabbitmq:
+    addresses: ${CLOUDAMQP_URL:localhost}
+
+    exchange: payment.externalbank.exchange
+
+    queue:
+      payment: payment.queue
+
+    routingkey:
+      payment: payment.rk
+
+
 beertech:
   swagger:
     baseUrl: ${SWAGGER_BASE_URL:beertech-bank.herokuapp.com:${server.port}}
