@@ -5,6 +5,7 @@ import static java.math.BigDecimal.ZERO;
 import java.math.BigDecimal;
 import java.util.List;
 
+import beertech.becks.api.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,8 +48,10 @@ public class AccountServiceImpl implements AccountService {
 			throw new UserDoesNotExistException();
 		}
 
+		User user = userRepository.getOne(accountRequestTO.getUserId());
+		
 		return accountRepository.save(Account.builder().code(accountRequestTO.getCode())
-				.userId(accountRequestTO.getUserId()).balance(ZERO).build());
+				.userId(accountRequestTO.getUserId()).user(user).balance(ZERO).build());
 	}
 
 	@Override
