@@ -11,8 +11,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import beertech.becks.externalbank.services.PaymentSlipService;
 import beertech.becks.externalbank.tos.request.PaymentSlipRequestTO;
 
-import java.util.regex.Pattern;
-
 @Service
 public class PaymentSlipServiceImpl implements PaymentSlipService {
 
@@ -32,21 +30,9 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 	}
 
 	private String encode(PaymentSlipRequestTO to) {
-		String fullString = to.getDate() + "-" + to.getValue() + "-" + to.getCategory() + "-" + to.getOrigin() + "-" + to.getDestination();
+		String fullString = to.getDate() + "-" + to.getValue() + "-" + to.getCategory() + "-" + to.getOrigin() + "-"
+				+ to.getDestination();
 		return DatatypeConverter.printHexBinary(fullString.getBytes());
-	}
-
-	private String adjustSize(String code) {
-		String ret = code;
-
-		if (code.length() > 5) {
-			ret = code.substring(0, 5);
-		} else {
-			while (ret.length() < 5) {
-				ret = "0" + ret;
-			}
-		}
-		return ret;
 	}
 
 }
