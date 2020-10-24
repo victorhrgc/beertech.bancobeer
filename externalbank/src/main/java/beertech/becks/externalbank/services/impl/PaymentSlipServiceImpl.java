@@ -32,7 +32,7 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 	}
 
 	private String encode(PaymentSlipRequestTO to) {
-		String fullString = to.getDate() + "-" + to.getValue() + "-" + to.getOrigin() + "-" + to.getDestination();
+		String fullString = to.getDate() + "-" + to.getValue() + "-" + to.getCategory() + "-" + to.getOrigin() + "-" + to.getDestination();
 		return DatatypeConverter.printHexBinary(fullString.getBytes());
 	}
 

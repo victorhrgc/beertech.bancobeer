@@ -1,5 +1,6 @@
 package beertech.becks.api.tos.request;
 
+import beertech.becks.api.model.PaymentCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +19,9 @@ public class TransactionPaymentRequestTO {
     private String destinationAccountCode;
 
     private BigDecimal value;
+
+    /**
+     * Indicates the category of payment in case of payment operation type
+     */
+    private PaymentCategory paymentCategory;
 }

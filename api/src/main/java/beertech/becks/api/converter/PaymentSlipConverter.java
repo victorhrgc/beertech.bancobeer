@@ -2,6 +2,7 @@ package beertech.becks.api.converter;
 
 import beertech.becks.api.entities.Bank;
 import beertech.becks.api.entities.PaymentSlip;
+import beertech.becks.api.model.PaymentCategory;
 import beertech.becks.api.service.AccountService;
 import beertech.becks.api.service.BankService;
 import java.io.UnsupportedEncodingException;
@@ -30,8 +31,8 @@ public class PaymentSlipConverter {
 
 
     String[] splitedPaymentSlip = decodeSlip(code).split("-");
-    String[] originBank = splitedPaymentSlip[2].split("/");
-    String[] destinationBank = splitedPaymentSlip[3].split("/");
+    String[] originBank = splitedPaymentSlip[3].split("/");
+    String[] destinationBank = splitedPaymentSlip[4].split("/");
 
     Bank bank = bankService.findByCode(originBank[0]);
 
@@ -40,6 +41,7 @@ public class PaymentSlipConverter {
           .code(code)
           .dueDate(LocalDate.parse(splitedPaymentSlip[0], DateTimeFormatter.BASIC_ISO_DATE))
           .value(new BigDecimal(splitedPaymentSlip[1]).divide(BigDecimal.valueOf(100)))
+          .category(PaymentCategory.valueOf(splitedPaymentSlip[2]))
           .user(accountService.getAccountByCode(originBank[1]).getUser())
           .originAccountCode(originBank[1])
           .destinationBankCode(destinationBank[0])

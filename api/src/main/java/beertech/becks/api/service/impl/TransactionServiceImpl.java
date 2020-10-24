@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static beertech.becks.api.model.PaymentCategory.OTHERS;
 import static beertech.becks.api.model.TypeOperation.*;
 import static java.time.LocalDateTime.now;
 
@@ -85,12 +86,12 @@ public class TransactionServiceImpl implements TransactionService {
 
 		// Debit
 		allTransactionsToSave.add(Transaction.builder().typeOperation(typeOperation).dateTime(currentDate)
-				.valueTransaction(transferRequestTO.getValue().negate()).accountId(originAccount.getId()).build());
+				.paymentCategory(OTHERS).valueTransaction(transferRequestTO.getValue().negate()).accountId(originAccount.getId()).build());
 		originAccount.setBalance(originAccount.getBalance().subtract(transferRequestTO.getValue()));
 
 		// Credit
 		allTransactionsToSave.add(Transaction.builder().typeOperation(typeOperation).dateTime(currentDate)
-				.valueTransaction(transferRequestTO.getValue()).accountId(destinationAccount.getId()).build());
+				.paymentCategory(OTHERS).valueTransaction(transferRequestTO.getValue()).accountId(destinationAccount.getId()).build());
 		destinationAccount.setBalance(destinationAccount.getBalance().add(transferRequestTO.getValue()));
 
 		transactionRepository.saveAll(allTransactionsToSave);
@@ -111,6 +112,21 @@ public class TransactionServiceImpl implements TransactionService {
 		transferRequestTO.setValue(transactionPaymentRequestTO.getValue());
 
 		return createTransfer(transactionPaymentRequestTO.getCurrentAccountCode(), transferRequestTO, PAGAMENTO);
+	}
+
+	@Override
+	public Account createPaymentToExternalBank(TransactionPaymentRequestTO transactionPaymentRequestTO) throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
+
+		Account account = findAccountByCode(transactionPaymentRequestTO.getCurrentAccountCode());
+		accountService.checkAvailableBalance(account.getBalance(), transactionPaymentRequestTO.getValue());
+
+		transactionRepository.save(Transaction.builder().typeOperation(PAGAMENTO).paymentCategory(transactionPaymentRequestTO.getPaymentCategory())
+				.dateTime(now()).valueTransaction(transactionPaymentRequestTO.getValue().negate()).accountId(account.getId()).build());
+
+		account.setBalance(account.getBalance().subtract(transactionPaymentRequestTO.getValue()));
+		accountRepository.save(account);
+
+		return account;
 	}
 
 

@@ -24,5 +24,8 @@ public interface TransactionService {
 	Account createPayment(TransactionPaymentRequestTO transactionPaymentRequestTO)
 			throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException;
 
+	Account createPaymentToExternalBank(TransactionPaymentRequestTO transactionPaymentRequestTO)
+			throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException;
+
 	StatementResponseTO getStatements(String accountCode) throws AccountDoesNotExistsException;
 }

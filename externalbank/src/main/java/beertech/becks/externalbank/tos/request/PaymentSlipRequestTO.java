@@ -13,4 +13,5 @@ public class PaymentSlipRequestTO {
 	String value;
 	String origin;
 	String destination;
+	String category;
 }

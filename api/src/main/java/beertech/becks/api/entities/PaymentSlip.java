@@ -1,5 +1,6 @@
 package beertech.becks.api.entities;
 
+import beertech.becks.api.model.PaymentCategory;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,5 +45,9 @@ public class PaymentSlip implements Serializable {
 
     @Column(name = "DESTINATION_BANK_CODE")
     private String destinationBankCode;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "CATEGORY")
+    private PaymentCategory category;
 
 }

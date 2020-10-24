@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 import javax.persistence.*;
 
+import beertech.becks.api.model.PaymentCategory;
 import beertech.becks.api.model.TypeOperation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,4 +36,8 @@ public class Transaction implements Serializable {
 
 	@Column(name = "FK_ACCOUNT_ID")
 	private Long accountId;
+
+	@Enumerated(EnumType.ORDINAL)
+	@Column(name = "PAYMENT_CATEGORY")
+	private PaymentCategory paymentCategory;
 }
