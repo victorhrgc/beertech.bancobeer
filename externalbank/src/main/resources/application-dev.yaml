@@ -11,3 +11,7 @@ spring:
 
     routingkey:
       payment: payment.rk
+
+api:
+  endpoint:
+    create-payment-slip: https://localhost:8080/transactions/accountCode/deposit

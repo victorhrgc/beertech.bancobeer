@@ -1,2 +1,6 @@
 server:
   port: ${PORT:8082}
+
+api:
+  endpoint:
+    create-payment-slip: https://beertech-bank.herokuapp.com/transactions/accountCode/deposit
