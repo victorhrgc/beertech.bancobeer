@@ -40,6 +40,8 @@ public class AccountServiceImpl implements AccountService {
 	public Account createAccount(AccountRequestTO accountRequestTO)
 			throws AccountAlreadyExistsException, UserDoesNotExistException {
 
+		accountRequestTO.setCode(adjustSize(accountRequestTO.getCode()));
+
 		if (accountRepository.existsByCode(accountRequestTO.getCode())) {
 			throw new AccountAlreadyExistsException(accountRequestTO.getCode());
 		}
@@ -52,6 +54,19 @@ public class AccountServiceImpl implements AccountService {
 		
 		return accountRepository.save(Account.builder().code(accountRequestTO.getCode())
 				.userId(accountRequestTO.getUserId()).user(user).balance(ZERO).build());
+	}
+
+	private String adjustSize(String code) {
+		String ret = code;
+
+		if (code.length() > 5) {
+			ret = code.substring(0, 5);
+		} else {
+			while (ret.length() < 5) {
+				ret = "0" + ret;
+			}
+		}
+		return ret;
 	}
 
 	@Override

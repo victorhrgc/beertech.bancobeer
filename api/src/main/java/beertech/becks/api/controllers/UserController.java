@@ -4,6 +4,8 @@ import static beertech.becks.api.constants.Constants.*;
 
 import javax.validation.Valid;
 
+import beertech.becks.api.exception.account.AccountAlreadyExistsException;
+import beertech.becks.api.exception.user.UserDoesNotExistException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +41,7 @@ public class UserController {
 	@PostMapping
 	@ApiOperation(value = "Create user")
 	public ResponseEntity<Object> createUser(@Valid @RequestBody UserRequestTO userRequestTO)
-			throws UserAlreadyExistsException {
+			throws UserAlreadyExistsException, AccountAlreadyExistsException, UserDoesNotExistException {
 		return new ResponseEntity<>(userService.createUser(userRequestTO), HttpStatus.CREATED);
 	}
 }

@@ -28,7 +28,8 @@ public class UserServiceImpl implements UserService {
 	private AccountService accountService;
 
 	@Override
-	public User createUser(UserRequestTO userRequestTO) throws UserAlreadyExistsException {
+	public User createUser(UserRequestTO userRequestTO)
+			throws UserAlreadyExistsException, AccountAlreadyExistsException, UserDoesNotExistException {
 		if (userRepository.existsByEmail(userRequestTO.getEmail())) {
 			throw new UserAlreadyExistsException();
 		}
@@ -37,8 +38,11 @@ public class UserServiceImpl implements UserService {
 			throw new UserAlreadyExistsException();
 		}
 
-		User user = userRepository.save(getUserByUserRequestTO(userRequestTO));
-		if(!user.getRole().equals(UserRoles.ADMIN)) {
+		User user = userRepository.save(User.builder().documentNumber(userRequestTO.getDocument())
+				.email(userRequestTO.getEmail()).name(userRequestTO.getName()).password(userRequestTO.getPassword())
+				.role(userRequestTO.getRole()).build());
+
+		if (!user.getRole().equals(UserRoles.ADMIN)) {
 			createUserAccount(user);
 		}
 		return user;
@@ -49,28 +53,11 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findByEmailAndPassword(email, password).orElseThrow(UserDoesNotExistException::new);
 	}
 
-	private User getUserByUserRequestTO(UserRequestTO userRequestTO) {
-		return User.builder().documentNumber(userRequestTO.getDocument()).email(userRequestTO.getEmail())
-				.name(userRequestTO.getName()).password(userRequestTO.getPassword()).role(userRequestTO.getRole())
-				.build();
-	}
-
-	private void createUserAccount(User user) {
-
-		StringBuilder userAccount = new StringBuilder();
-		userAccount.append(user.getId().toString());
-		userAccount.append("_");
-		userAccount.append(user.getDocumentNumber());
-
+	private void createUserAccount(User user) throws AccountAlreadyExistsException, UserDoesNotExistException {
 		AccountRequestTO accountRequestTO = new AccountRequestTO();
-		accountRequestTO.setCode(userAccount.toString());
+		accountRequestTO.setCode(user.getId().toString() + user.getDocumentNumber());
 		accountRequestTO.setUserId(user.getId());
-
-		try {
-			accountService.createAccount(accountRequestTO);
-		} catch (UserDoesNotExistException | AccountAlreadyExistsException e) {
-			logger.error("An error occurred while creating account: ", e);
-		}
+		accountService.createAccount(accountRequestTO);
 	}
 
 }

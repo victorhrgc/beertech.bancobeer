@@ -49,14 +49,13 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 	@Override
 	public PaymentSlip executePayment(String paymentCode) throws PaymentSlipExecutionException {
 
-		// Logica que vai decodificar o "codigo de barras" e vai retornar um PaymentSlip
 		PaymentSlip paymentSlip = paymentSlipRepository.findByCode(paymentCode).orElseThrow(PaymentSlipExecutionException::new);
 
 		try {
 			if("001".equals(paymentSlip.getDestinationBankCode())) {
 
 				TransactionPaymentRequestTO transactionPaymentRequestTO = new TransactionPaymentRequestTO();
-				transactionPaymentRequestTO.setCurrentAccountCode(paymentSlip.getOriginAccountCode()); // alterar estrutura de dados
+				transactionPaymentRequestTO.setCurrentAccountCode(paymentSlip.getOriginAccountCode());
 				transactionPaymentRequestTO.setDestinationAccountCode(paymentSlip.getDestinationAccountCode());
 				transactionPaymentRequestTO.setValue(paymentSlip.getValue());
 

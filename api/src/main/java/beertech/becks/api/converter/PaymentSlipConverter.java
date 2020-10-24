@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,12 @@ public class PaymentSlipConverter {
 
   public PaymentSlip codeToPaymentSlip(String code)
       throws Exception {
+    //Pattern pattern = Pattern.compile("\\d\\d\\d\\/\\d\\d\\d\\d\\d");
+    //if(!pattern.matcher(to.getOrigin()).matches()) {
+    //      return;
+    //    }
+
+
     String[] splitedPaymentSlip = decodeSlip(code).split("-");
     String[] originBank = splitedPaymentSlip[2].split("/");
     String[] destinationBank = splitedPaymentSlip[3].split("/");
