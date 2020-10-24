@@ -1,6 +1,5 @@
 package beertech.becks.api.exception;
 
-import beertech.becks.api.exception.bank.BankAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -10,6 +9,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import beertech.becks.api.exception.account.AccountAlreadyExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
+import beertech.becks.api.exception.bank.BankAlreadyExistsException;
+import beertech.becks.api.exception.bank.BankDoesNotExistsException;
+import beertech.becks.api.exception.paymentslip.PaymentSlipAlreadyExistsException;
 import beertech.becks.api.exception.user.UserAlreadyExistsException;
 import beertech.becks.api.exception.user.UserDoesNotExistException;
 import beertech.becks.api.tos.response.ErrorResponseTO;
@@ -55,6 +57,19 @@ public class ExceptionHandler {
 	public ResponseEntity<ErrorResponseTO> handleBankAlreadyExistsException(BankAlreadyExistsException ex) {
 		return new ResponseEntity<>(new ErrorResponseTO("Bank with code " + ex.getMessage() + " already exists"),
 				HttpStatus.OK);
+	}
+
+	@org.springframework.web.bind.annotation.ExceptionHandler(BankDoesNotExistsException.class)
+	public ResponseEntity<ErrorResponseTO> handleBankDoesNotExistsException(BankDoesNotExistsException ex) {
+		return new ResponseEntity<>(new ErrorResponseTO("Bank with code " + ex.getMessage() + " does not exist"),
+				HttpStatus.NOT_FOUND);
+	}
+
+	@org.springframework.web.bind.annotation.ExceptionHandler(PaymentSlipAlreadyExistsException.class)
+	public ResponseEntity<ErrorResponseTO> handlePaymentSlipAlreadyExistsException(
+			PaymentSlipAlreadyExistsException ex) {
+		return new ResponseEntity<>(
+				new ErrorResponseTO("Payment slip with code " + ex.getMessage() + " already exists"), HttpStatus.OK);
 	}
 
 }
