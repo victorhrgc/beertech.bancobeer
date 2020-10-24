@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
 
+import beertech.becks.api.model.TypeOperation;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,4 +29,6 @@ public class TransferRequestTO {
 	@NotNull(message = "The destination account code is mandatory")
 	@ApiModelProperty(required = true)
 	private String destinationAccountCode;
+
+	private TypeOperation typeOperation;
 }

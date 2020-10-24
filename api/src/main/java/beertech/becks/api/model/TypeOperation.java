@@ -5,7 +5,8 @@ public enum TypeOperation {
     DEPOSITO("D"),
     SAQUE("S"),
     TRANSFERENCIA("T"),
-    EXTRATO("E");
+    EXTRATO("E"),
+    PAGAMENTO("P");
 
     private String description;
 

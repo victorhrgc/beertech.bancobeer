@@ -10,10 +10,13 @@ import beertech.becks.api.repositories.PaymentSlipRepository;
 import beertech.becks.api.service.PaymentSlipService;
 import beertech.becks.api.service.TransactionService;
 import beertech.becks.api.tos.request.PaymentRequestTO;
+import beertech.becks.api.tos.request.TransactionPaymentRequestTO;
+import beertech.becks.api.tos.request.TransactionRequestTO;
 import beertech.becks.api.tos.request.TransferRequestTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,20 +47,18 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 
 		// Logica que vai decodificar o "codigo de barras" e vai retornar um PaymentSlip
 		PaymentSlip paymentSlip = new PaymentSlip();
-		paymentSlip.setBank(Bank.builder().code("NotBecks").id(1L).build());
+		paymentSlip.setBank(Bank.builder().code("002").id(1L).build());
 
 		try {
+			if("001".equals(paymentSlip.getBank().getCode())) {
 
-			if("Becks".equals(paymentSlip.getBank().getCode())) {
-				// Se vazio, entao eh apenas um pagamento da conta atual
-				if(paymentRequestTO.getDestinationAccountCode().isEmpty()) {
-					transactionService.createWithdrawal(paymentRequestTO.getCurrentAccountCode(), paymentSlip.getValue());
-				} else {
-					TransferRequestTO transferRequestTO = new TransferRequestTO();
-					transferRequestTO.setDestinationAccountCode(paymentRequestTO.getDestinationAccountCode());
-					transferRequestTO.setValue(paymentSlip.getValue());
-					transactionService.createTransfer(paymentRequestTO.getCurrentAccountCode(), transferRequestTO);
-				}
+				TransactionPaymentRequestTO transactionPaymentRequestTO = new TransactionPaymentRequestTO();
+				transactionPaymentRequestTO.setCurrentAccountCode("accountCode"); // alterar estrutura de dados
+				transactionPaymentRequestTO.setDestinationAccountCode("destinationAccountCode");
+				transactionPaymentRequestTO.setValue(paymentSlip.getValue());
+
+				transactionService.createPayment(transactionPaymentRequestTO);
+
 			} else {
 				if(!rabbitProducer.produceBlockingMessageSuccessfully(paymentRequestTO)) {
 					//TODO fazer rollback do debito
@@ -68,8 +69,8 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 				}
 			}
 		}
-		catch(AccountDoesNotExistsException | AccountDoesNotHaveEnoughBalanceException e) {
-			throw new PaymentSlipExecutionException(e.getMessage()); // repensar essa forma de tratar a execao
+		catch(Exception e) {
+			throw new PaymentSlipExecutionException(); // repensar essa forma de tratar a exception
 		}
 
 		return paymentSlip;

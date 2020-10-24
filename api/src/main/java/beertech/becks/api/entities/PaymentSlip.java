@@ -46,4 +46,5 @@ public class PaymentSlip implements Serializable {
     @JoinColumn(name = "FK_BANK_CODE", insertable = false, updatable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Bank bank;
+
 }

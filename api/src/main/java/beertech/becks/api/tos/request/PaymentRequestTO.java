@@ -18,9 +18,4 @@ public class PaymentRequestTO {
     @ApiModelProperty(required = true)
     private String code;
 
-    @NotNull(message = "The current account code is required")
-    @ApiModelProperty(required = true)
-    private String currentAccountCode;
-
-    private String destinationAccountCode;
 }

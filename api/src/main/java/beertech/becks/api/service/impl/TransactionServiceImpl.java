@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import beertech.becks.api.tos.request.TransactionPaymentRequestTO;
+import beertech.becks.api.tos.request.TransactionRequestTO;
 import org.springframework.stereotype.Service;
 
 import beertech.becks.api.entities.Account;
@@ -101,6 +103,18 @@ public class TransactionServiceImpl implements TransactionService {
 
 		return originAccount;
 	}
+
+	@Override
+	public Account createPayment(TransactionPaymentRequestTO transactionPaymentRequestTO) throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
+
+		TransferRequestTO transferRequestTO = new TransferRequestTO();
+		transferRequestTO.setDestinationAccountCode(transactionPaymentRequestTO.getDestinationAccountCode());
+		transferRequestTO.setValue(transactionPaymentRequestTO.getValue());
+		transferRequestTO.setTypeOperation(PAGAMENTO);
+
+		return createTransfer(transactionPaymentRequestTO.getCurrentAccountCode(), transferRequestTO);
+	}
+
 
 	private Account findAccountByCode(String accountCode) throws AccountDoesNotExistsException {
 		return accountRepository.findByCode(accountCode).orElseThrow(AccountDoesNotExistsException::new);
