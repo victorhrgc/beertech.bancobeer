@@ -1,18 +1,14 @@
 package beertech.becks.api.controllers;
 
-import static beertech.becks.api.constants.Constants.*;
-
-import javax.validation.Valid;
-
+import beertech.becks.api.exception.payment.PaymentSlipExecutionException;
+import beertech.becks.api.service.PaymentSlipService;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import beertech.becks.api.exception.payment.PaymentSlipExecutionException;
-import beertech.becks.api.service.PaymentSlipService;
-import beertech.becks.api.tos.request.PaymentRequestTO;
-import io.swagger.annotations.*;
+import static beertech.becks.api.constants.Constants.*;
 
 @RestController
 @RequestMapping("/payment-slips")
@@ -42,9 +38,9 @@ public class PaymentSlipController {
                     @ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
                     @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
             })
-    @GetMapping("/{userId}/paymentSlipsByUser")
+    @GetMapping("/user/{userId}")
     @ApiOperation(value = "Get payment slips by user document number", authorizations = @Authorization(value = "JWT"))
-    public ResponseEntity<Object> getPaymentSlipsByUserDocumentNumber(@PathVariable Long userId) {
+    public ResponseEntity<Object> getPaymentSlipsByUserId(@PathVariable Long userId) {
         return new ResponseEntity<>(paymentSlipService.findByUserId(userId), HttpStatus.OK);
     }
 
@@ -54,9 +50,9 @@ public class PaymentSlipController {
                     @ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
                     @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
             })
-    @PostMapping("/{userId}/paymentSlips")
+    @PostMapping("/{paymentCode}")
     @ApiOperation(value = "Executing payment", authorizations = @Authorization(value = "JWT"))
-    public ResponseEntity<Object> executePayment(@Valid @RequestBody PaymentRequestTO paymentRequestTO) throws PaymentSlipExecutionException {
-        return new ResponseEntity<>(paymentSlipService.executePayment(paymentRequestTO), HttpStatus.OK);
+    public ResponseEntity<Object> executePayment(@PathVariable String paymentCode) throws PaymentSlipExecutionException {
+        return new ResponseEntity<>(paymentSlipService.executePayment(paymentCode), HttpStatus.OK);
     }
 }

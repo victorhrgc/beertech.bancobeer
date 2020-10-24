@@ -3,20 +3,14 @@ package beertech.becks.api.service.impl;
 import beertech.becks.api.amqp.RabbitProducer;
 import beertech.becks.api.entities.Bank;
 import beertech.becks.api.entities.PaymentSlip;
-import beertech.becks.api.exception.account.AccountDoesNotExistsException;
-import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
 import beertech.becks.api.exception.payment.PaymentSlipExecutionException;
 import beertech.becks.api.repositories.PaymentSlipRepository;
 import beertech.becks.api.service.PaymentSlipService;
 import beertech.becks.api.service.TransactionService;
-import beertech.becks.api.tos.request.PaymentRequestTO;
 import beertech.becks.api.tos.request.TransactionPaymentRequestTO;
-import beertech.becks.api.tos.request.TransactionRequestTO;
-import beertech.becks.api.tos.request.TransferRequestTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +37,7 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 	}
 
 	@Override
-	public PaymentSlip executePayment(PaymentRequestTO paymentRequestTO) throws PaymentSlipExecutionException {
+	public PaymentSlip executePayment(String paymentCode) throws PaymentSlipExecutionException {
 
 		// Logica que vai decodificar o "codigo de barras" e vai retornar um PaymentSlip
 		PaymentSlip paymentSlip = new PaymentSlip();
@@ -54,13 +48,13 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 
 				TransactionPaymentRequestTO transactionPaymentRequestTO = new TransactionPaymentRequestTO();
 				transactionPaymentRequestTO.setCurrentAccountCode("accountCode"); // alterar estrutura de dados
-				transactionPaymentRequestTO.setDestinationAccountCode("destinationAccountCode");
+				transactionPaymentRequestTO.setDestinationAccountCode(paymentSlip.getDestinationAccountCode());
 				transactionPaymentRequestTO.setValue(paymentSlip.getValue());
 
 				transactionService.createPayment(transactionPaymentRequestTO);
 
 			} else {
-				if(!rabbitProducer.produceBlockingMessageSuccessfully(paymentRequestTO)) {
+				if(!rabbitProducer.produceBlockingMessageSuccessfully(paymentCode)) {
 					//TODO fazer rollback do debito
 					System.out.println("Erro!");
 				} else {

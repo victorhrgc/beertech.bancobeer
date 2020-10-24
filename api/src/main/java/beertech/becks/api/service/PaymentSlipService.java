@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import beertech.becks.api.entities.PaymentSlip;
 import beertech.becks.api.exception.payment.PaymentSlipExecutionException;
-import beertech.becks.api.tos.request.PaymentRequestTO;
 
 public interface PaymentSlipService {
 
@@ -13,6 +12,6 @@ public interface PaymentSlipService {
 
 	Optional<PaymentSlip> findByUserId(Long userId);
 
-    PaymentSlip executePayment(PaymentRequestTO paymentRequestTO) throws PaymentSlipExecutionException;
+    PaymentSlip executePayment(String paymentCode) throws PaymentSlipExecutionException;
 
 }

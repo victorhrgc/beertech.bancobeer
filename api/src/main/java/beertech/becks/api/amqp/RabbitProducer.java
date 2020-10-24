@@ -1,9 +1,5 @@
 package beertech.becks.api.amqp;
 
-import java.util.concurrent.ExecutionException;
-
-import beertech.becks.api.tos.request.PaymentRequestTO;
-import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.rabbit.AsyncRabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,10 +22,10 @@ public class RabbitProducer {
 	@Autowired
 	private AsyncRabbitTemplate rabbitTemplate;
 
-	public boolean produceBlockingMessageSuccessfully(PaymentRequestTO to) {
+	public boolean produceBlockingMessageSuccessfully(String paymentCode) {
 		try {
 			ListenableFuture<PaymentResponseTO> listenableFuture = rabbitTemplate.convertSendAndReceiveAsType(exchange,
-					routingKey, to, new ParameterizedTypeReference<PaymentResponseTO>() {
+					routingKey, paymentCode, new ParameterizedTypeReference<PaymentResponseTO>() {
 					});
 
 			PaymentResponseTO resp = listenableFuture.get();
@@ -43,9 +39,9 @@ public class RabbitProducer {
 		return true;
 	}
 
-	public void produceNonBlockingWithCallback(PaymentRequestTO to) {
+	public void produceNonBlockingWithCallback(String paymentCode) {
 		AsyncRabbitTemplate.RabbitConverterFuture<PaymentResponseTO> rabbitConverterFuture = rabbitTemplate
-				.convertSendAndReceiveAsType(exchange, routingKey, to,
+				.convertSendAndReceiveAsType(exchange, routingKey, paymentCode,
 						new ParameterizedTypeReference<PaymentResponseTO>() {
 						});
 
