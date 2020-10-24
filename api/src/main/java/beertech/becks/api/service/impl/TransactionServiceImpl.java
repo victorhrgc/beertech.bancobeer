@@ -1,17 +1,5 @@
 package beertech.becks.api.service.impl;
 
-import static beertech.becks.api.model.TypeOperation.*;
-import static java.time.LocalDateTime.now;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import beertech.becks.api.tos.request.TransactionPaymentRequestTO;
-import beertech.becks.api.tos.request.TransactionRequestTO;
-import org.springframework.stereotype.Service;
-
 import beertech.becks.api.entities.Account;
 import beertech.becks.api.entities.Transaction;
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
@@ -20,8 +8,18 @@ import beertech.becks.api.repositories.AccountRepository;
 import beertech.becks.api.repositories.TransactionRepository;
 import beertech.becks.api.service.AccountService;
 import beertech.becks.api.service.TransactionService;
+import beertech.becks.api.tos.request.TransactionPaymentRequestTO;
 import beertech.becks.api.tos.request.TransferRequestTO;
 import beertech.becks.api.tos.response.StatementResponseTO;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static beertech.becks.api.model.TypeOperation.*;
+import static java.time.LocalDateTime.now;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -85,12 +83,12 @@ public class TransactionServiceImpl implements TransactionService {
 		LocalDateTime currentDate = now();
 
 		// Debit
-		allTransactionsToSave.add(Transaction.builder().typeOperation(TRANSFERENCIA).dateTime(currentDate)
+		allTransactionsToSave.add(Transaction.builder().typeOperation(transferRequestTO.getTypeOperation()).dateTime(currentDate)
 				.valueTransaction(transferRequestTO.getValue().negate()).accountId(originAccount.getId()).build());
 		originAccount.setBalance(originAccount.getBalance().subtract(transferRequestTO.getValue()));
 
 		// Credit
-		allTransactionsToSave.add(Transaction.builder().typeOperation(TRANSFERENCIA).dateTime(currentDate)
+		allTransactionsToSave.add(Transaction.builder().typeOperation(transferRequestTO.getTypeOperation()).dateTime(currentDate)
 				.valueTransaction(transferRequestTO.getValue()).accountId(destinationAccount.getId()).build());
 		destinationAccount.setBalance(destinationAccount.getBalance().add(transferRequestTO.getValue()));
 
