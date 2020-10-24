@@ -1,30 +1,28 @@
 package beertech.becks.api.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
+import beertech.becks.api.entities.Account;
+import beertech.becks.api.exception.account.AccountAlreadyExistsException;
+import beertech.becks.api.exception.account.AccountDoesNotExistsException;
 import beertech.becks.api.exception.user.UserDoesNotExistException;
+import beertech.becks.api.repositories.AccountRepository;
 import beertech.becks.api.repositories.UserRepository;
+import beertech.becks.api.service.impl.AccountServiceImpl;
+import beertech.becks.api.tos.request.AccountRequestTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import beertech.becks.api.entities.Account;
-import beertech.becks.api.exception.account.AccountAlreadyExistsException;
-import beertech.becks.api.exception.account.AccountDoesNotExistsException;
-import beertech.becks.api.repositories.AccountRepository;
-import beertech.becks.api.service.impl.AccountServiceImpl;
-import beertech.becks.api.tos.request.AccountRequestTO;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class AccountServiceTest {

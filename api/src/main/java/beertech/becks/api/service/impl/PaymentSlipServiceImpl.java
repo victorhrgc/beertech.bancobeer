@@ -52,11 +52,14 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 					transactionService.createTransfer(paymentSlipRequestTO.getCurrentAccountCode(), transferRequestTO);
 				}
 			}
+			else {
+				// Logica quando for banco externo
+			}
 		}
 		catch(AccountDoesNotExistsException | AccountDoesNotHaveEnoughBalanceException e) {
 			throw new PaymentSlipExecutionException(e.getMessage()); // repensar essa forma de tratar a execao
 		}
 
-		return new PaymentSlip();
+		return paymentSlip;
 	}
 }
