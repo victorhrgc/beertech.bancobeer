@@ -39,7 +39,7 @@ public class PaymentSlip implements Serializable {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User user;
 
-    @Column(name = "FK_USER_DESTINATION_DOCUMENT_NUMBER")
+    @Column(name = "DESTINATION_DOCUMENT_NUMBER")
     private String userDestinationDocumentNumber;
 
     @Column(name = "FK_BANK_CODE")
