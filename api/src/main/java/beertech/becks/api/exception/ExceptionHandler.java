@@ -1,6 +1,7 @@
 package beertech.becks.api.exception;
 
 import beertech.becks.api.exception.paymentslip.PaymentSlipDoesNotExistsException;
+import beertech.becks.api.exception.paymentslip.PaymentSlipRegisterException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -77,6 +78,12 @@ public class ExceptionHandler {
 	public ResponseEntity<ErrorResponseTO> handlePaymentSlipDoesNotExistsException(
 			PaymentSlipDoesNotExistsException ex) {
 		return new ResponseEntity<>(new ErrorResponseTO("Payment Slip does not exist"), HttpStatus.NOT_FOUND);
+	}
+
+	@org.springframework.web.bind.annotation.ExceptionHandler(PaymentSlipRegisterException.class)
+	public ResponseEntity<ErrorResponseTO> handlePaymentSlipRegisterException(
+			PaymentSlipRegisterException ex) {
+		return new ResponseEntity<>(new ErrorResponseTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
 	}
 
 }
