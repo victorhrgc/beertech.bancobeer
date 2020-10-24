@@ -2,11 +2,11 @@ package beertech.becks.api.model;
 
 public enum PaymentCategory {
 
-    SERVICES("S"),
+    SERVICES("SE"),
     EDUCATION("ED"),
-    FOOD("F"),
-    ENTERTAINMENT("E"),
-    OTHERS("O");
+    FOOD("FO"),
+    ENTERTAINMENT("EN"),
+    OTHERS("OT");
 
     private String description;
 
@@ -16,6 +16,15 @@ public enum PaymentCategory {
 
     public String getDescription() {
         return description;
+    }
+
+    public static PaymentCategory getObject(String description) {
+        for (PaymentCategory object : values()) {
+            if (object.description.equals(description)) {
+                return object;
+            }
+        }
+        return null;
     }
 
 }

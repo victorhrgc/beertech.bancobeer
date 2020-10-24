@@ -41,7 +41,7 @@ public class PaymentSlipConverter {
           .code(code)
           .dueDate(LocalDate.parse(splitedPaymentSlip[0], DateTimeFormatter.BASIC_ISO_DATE))
           .value(new BigDecimal(splitedPaymentSlip[1]).divide(BigDecimal.valueOf(100)))
-          .category(PaymentCategory.valueOf(splitedPaymentSlip[2]))
+          .category(PaymentCategory.getObject(splitedPaymentSlip[2]))
           .user(accountService.getAccountByCode(originBank[1]).getUser())
           .originAccountCode(originBank[1])
           .destinationBankCode(destinationBank[0])
