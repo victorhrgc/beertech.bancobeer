@@ -1,5 +1,6 @@
 package beertech.becks.api.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,4 +15,5 @@ public interface PaymentSlipService {
 
     PaymentSlip executePayment(String paymentCode) throws PaymentSlipExecutionException;
 
+	void decodeAndSave(String paymentSlipCode) throws UnsupportedEncodingException, Exception;
 }

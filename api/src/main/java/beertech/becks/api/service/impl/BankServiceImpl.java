@@ -1,5 +1,6 @@
 package beertech.becks.api.service.impl;
 
+import beertech.becks.api.exception.bank.BankDoesNotExistsException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,10 @@ public class BankServiceImpl implements BankService {
 		}
 
 		return bankRepository.save(Bank.builder().code(bankRequestTO.getCode()).name(bankRequestTO.getName()).build());
+	}
+
+	@Override
+	public Bank findByCode(String code) throws BankDoesNotExistsException {
+		return bankRepository.findByCode(code).orElseThrow(BankDoesNotExistsException::new);
 	}
 }
