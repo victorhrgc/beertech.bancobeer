@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -85,7 +86,7 @@ public class PaymentSlipController {
       })
   @PostMapping
   @ApiOperation(value = "Create a payment slip")
-  public ResponseEntity<Void> createPaymentSlip(@RequestBody PaymentSlipTO paymentSlipTO, @Header String signature)
+  public ResponseEntity<Void> createPaymentSlip(@RequestBody PaymentSlipTO paymentSlipTO, @RequestHeader String signature)
       throws Exception {
     paymentSlipService.decodeAndSave(paymentSlipTO, signature);
     return new ResponseEntity<>(HttpStatus.OK);

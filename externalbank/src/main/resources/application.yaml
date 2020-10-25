@@ -15,4 +15,4 @@ spring:
 
 api:
   endpoint:
-    create-payment-slip: https://beertech-bank.herokuapp.com/payment-slips
+    create-payment-slip: http://localhost:8080/payment-slips

@@ -1,5 +1,8 @@
 package beertech.becks.api.service.impl;
 
+import beertech.becks.api.security.sign.DigitalSign;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
@@ -104,13 +107,13 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 
 			Optional<Bank> destinationBank = bankRepository.findByCode(paymentSlip.getDestinationBankCode());
 
-			PublicKey publicKey = readPublicKey(destinationBank.get().getPublicKey());
-
-			if(verify(paymentSlipTO.toString().getBytes(), signature.getBytes(), publicKey)){
+			PublicKey publicKey = DigitalSign.readPublicKey(destinationBank.get().getPublicKey());
+			byte[] document = DigitalSign.objectToJsonBytes(paymentSlipTO);
+			byte[] decodedSignature = Base64.getDecoder().decode(signature);
+			if(DigitalSign.verify(document, decodedSignature, publicKey)){
 				paymentSlipRepository.save(paymentSlip);
 				return;
 			}
-
 			throw new PaymentSlipRegisterException("Signature is not valid.");
 
 		}
@@ -149,25 +152,5 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 
 		});
 		return ret;
-	}
-
-	public static boolean verify(byte[] document,byte[] receivedSignature, PublicKey publicKey){
-		try {
-			Signature signature = Signature.getInstance("SHA256withRSA");
-			signature.initVerify(publicKey);
-			signature.update(document);
-			return  signature.verify(receivedSignature);
-		} catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	public static PublicKey readPublicKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
-		byte[] encoded = Base64.getDecoder().decode(key);
-
-		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-		X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
-		return (PublicKey) keyFactory.generatePublic(keySpec);
 	}
 }
