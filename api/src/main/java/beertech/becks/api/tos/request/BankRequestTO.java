@@ -22,4 +22,8 @@ public class BankRequestTO {
 	@ApiModelProperty(required = true)
 	private String name;
 
+	@NotBlank(message = "The name is required")
+	@ApiModelProperty(required = true)
+	private String publicKey;
+
 }

@@ -1,6 +1,10 @@
 package beertech.becks.api.service.impl;
 
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +16,7 @@ import beertech.becks.api.exception.paymentslip.PaymentSlipAlreadyExistsExceptio
 import beertech.becks.api.exception.paymentslip.PaymentSlipRegisterException;
 import beertech.becks.api.repositories.AccountRepository;
 import beertech.becks.api.repositories.BankRepository;
+import beertech.becks.api.tos.request.PaymentSlipTO;
 import beertech.becks.api.tos.response.PaymentResponseTO;
 import beertech.becks.api.tos.response.PaymentSlipResponseTO;
 import beertech.becks.api.tos.response.PaymentSlipUserTO;
@@ -90,14 +95,24 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 	}
 
 	@Override
-	public void decodeAndSave(String code) throws PaymentSlipAlreadyExistsException, BankDoesNotExistsException,
-			PaymentSlipRegisterException, AccountDoesNotExistsException {
-		Optional<PaymentSlip> existentSlip = paymentSlipRepository.findByCode(code);
+	public void decodeAndSave(PaymentSlipTO paymentSlipTO, String signature) throws PaymentSlipAlreadyExistsException, BankDoesNotExistsException,
+			PaymentSlipRegisterException, AccountDoesNotExistsException, InvalidKeySpecException, NoSuchAlgorithmException {
+		Optional<PaymentSlip> existentSlip = paymentSlipRepository.findByCode(paymentSlipTO.getCode());
 
 		if (!existentSlip.isPresent()) {
-			PaymentSlip paymentSlip = converter.codeToPaymentSlip(code);
-			paymentSlipRepository.save(paymentSlip);
-			return;
+			PaymentSlip paymentSlip = converter.codeToPaymentSlip(paymentSlipTO.getCode());
+
+			Optional<Bank> destinationBank = bankRepository.findByCode(paymentSlip.getDestinationBankCode());
+
+			PublicKey publicKey = readPublicKey(destinationBank.get().getPublicKey());
+
+			if(verify(paymentSlipTO.toString().getBytes(), signature.getBytes(), publicKey)){
+				paymentSlipRepository.save(paymentSlip);
+				return;
+			}
+
+			throw new PaymentSlipRegisterException("Signature is not valid.");
+
 		}
 
 		throw new PaymentSlipAlreadyExistsException();
@@ -134,5 +149,25 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 
 		});
 		return ret;
+	}
+
+	public static boolean verify(byte[] document,byte[] receivedSignature, PublicKey publicKey){
+		try {
+			Signature signature = Signature.getInstance("SHA256withRSA");
+			signature.initVerify(publicKey);
+			signature.update(document);
+			return  signature.verify(receivedSignature);
+		} catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static PublicKey readPublicKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		byte[] encoded = Base64.getDecoder().decode(key);
+
+		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+		X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
+		return (PublicKey) keyFactory.generatePublic(keySpec);
 	}
 }

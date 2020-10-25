@@ -19,6 +19,7 @@ import io.swagger.annotations.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -84,9 +85,9 @@ public class PaymentSlipController {
       })
   @PostMapping
   @ApiOperation(value = "Create a payment slip")
-  public ResponseEntity<Void> createPaymentSlip(@RequestBody PaymentSlipTO paymentSlipTO)
+  public ResponseEntity<Void> createPaymentSlip(@RequestBody PaymentSlipTO paymentSlipTO, @Header String signature)
       throws Exception {
-    paymentSlipService.decodeAndSave(paymentSlipTO.getCode());
+    paymentSlipService.decodeAndSave(paymentSlipTO, signature);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 }

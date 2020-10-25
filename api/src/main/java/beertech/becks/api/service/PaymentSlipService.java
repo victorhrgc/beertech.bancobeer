@@ -1,6 +1,8 @@
 package beertech.becks.api.service;
 
 import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
 import beertech.becks.api.entities.PaymentSlip;
@@ -12,6 +14,7 @@ import beertech.becks.api.exception.paymentslip.PaymentSlipAlreadyExistsExceptio
 import beertech.becks.api.exception.paymentslip.PaymentSlipDoesNotExistsException;
 import beertech.becks.api.exception.paymentslip.PaymentSlipRegisterException;
 import beertech.becks.api.exception.user.UserDoesNotExistException;
+import beertech.becks.api.tos.request.PaymentSlipTO;
 import beertech.becks.api.tos.response.PaymentSlipResponseTO;
 
 public interface PaymentSlipService {
@@ -23,6 +26,6 @@ public interface PaymentSlipService {
 	void executePayment(String paymentCode) throws PaymentSlipDoesNotExistsException,
 			AccountDoesNotHaveEnoughBalanceException, AccountDoesNotExistsException, PaymentNotDoneException;
 
-	void decodeAndSave(String paymentSlipCode) throws PaymentSlipAlreadyExistsException, BankDoesNotExistsException,
-			PaymentSlipRegisterException, AccountDoesNotExistsException;
+	void decodeAndSave(PaymentSlipTO paymentSlip, String signature) throws PaymentSlipAlreadyExistsException, BankDoesNotExistsException,
+			PaymentSlipRegisterException, AccountDoesNotExistsException, InvalidKeySpecException, NoSuchAlgorithmException;
 }

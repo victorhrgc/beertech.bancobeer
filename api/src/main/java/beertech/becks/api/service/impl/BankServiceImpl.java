@@ -29,7 +29,7 @@ public class BankServiceImpl implements BankService {
 			throw new BankAlreadyExistsException(bankRequestTO.getCode());
 		}
 
-		return bankRepository.save(Bank.builder().code(bankRequestTO.getCode()).name(bankRequestTO.getName()).build());
+		return bankRepository.save(Bank.builder().code(bankRequestTO.getCode()).name(bankRequestTO.getName()).publicKey(bankRequestTO.getPublicKey()).build());
 	}
 
 	@Override

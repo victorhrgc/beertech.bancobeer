@@ -23,4 +23,7 @@ public class Bank implements Serializable {
 
 	@Column
 	private String name;
+
+	@Column(length = 2000)
+	private String publicKey;
 }
