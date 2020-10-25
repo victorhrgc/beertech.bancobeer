@@ -17,6 +17,7 @@ import beertech.becks.api.service.AccountService;
 import beertech.becks.api.tos.request.AccountRequestTO;
 import beertech.becks.api.tos.response.BalanceResponseTO;
 import io.swagger.annotations.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/accounts")
@@ -36,6 +37,7 @@ public class AccountController {
 				@ApiResponse(code = 409, message = STATUS_409_CONFLICT),
 				@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
 			})
+	@ApiIgnore
 	@PostMapping
 	@ApiOperation(value = "Create account" , authorizations = @Authorization(value = "JWT"))
 	public ResponseEntity<Object> createAccount(@Valid @RequestBody AccountRequestTO accountTO)
