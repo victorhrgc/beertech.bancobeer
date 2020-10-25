@@ -41,7 +41,8 @@ public class TransactionController {
 		return ok(transactionService.getStatements(accountCode));
 	}
 
-	@ApiResponses(value = { @ApiResponse(code = 201, message = STATUS_201_CREATED),
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = STATUS_201_CREATED),
 			@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
 			@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR) })
 	@PostMapping("/{accountCode}/deposit")
@@ -51,8 +52,10 @@ public class TransactionController {
 		return new ResponseEntity<>(transactionService.createDeposit(accountCode, value), CREATED);
 	}
 
-	@ApiResponses(value = { @ApiResponse(code = 201, message = STATUS_201_CREATED),
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = STATUS_201_CREATED),
 			@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+			@ApiResponse(code = 409, message = STATUS_409_CONFLICT),
 			@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR) })
 	@PostMapping("/{accountCode}/withdrawal")
 	@ApiOperation(value = "Create withdrawal", authorizations = @Authorization(value = "JWT"))
@@ -61,8 +64,10 @@ public class TransactionController {
 		return new ResponseEntity<>(transactionService.createWithdrawal(accountCode, value), CREATED);
 	}
 
-	@ApiResponses(value = { @ApiResponse(code = 201, message = STATUS_201_CREATED),
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = STATUS_201_CREATED),
 			@ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+			@ApiResponse(code = 409, message = STATUS_409_CONFLICT),
 			@ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR) })
 	@PostMapping("/{accountCode}/transfer")
 	@ApiOperation(value = "Create transfer", authorizations = @Authorization(value = "JWT"))

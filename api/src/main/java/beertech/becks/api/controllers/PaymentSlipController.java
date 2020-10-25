@@ -1,13 +1,12 @@
 package beertech.becks.api.controllers;
 
-import static beertech.becks.api.constants.Constants.STATUS_200_GET_OK;
-import static beertech.becks.api.constants.Constants.STATUS_404_NOT_FOUND;
-import static beertech.becks.api.constants.Constants.STATUS_500_INTERNAL_SERVER_ERROR;
-
 import beertech.becks.api.exception.account.AccountDoesNotExistsException;
 import beertech.becks.api.exception.account.AccountDoesNotHaveEnoughBalanceException;
+import beertech.becks.api.exception.bank.BankDoesNotExistsException;
 import beertech.becks.api.exception.payment.PaymentNotDoneException;
+import beertech.becks.api.exception.paymentslip.PaymentSlipAlreadyExistsException;
 import beertech.becks.api.exception.paymentslip.PaymentSlipDoesNotExistsException;
+import beertech.becks.api.exception.paymentslip.PaymentSlipRegisterException;
 import beertech.becks.api.exception.user.UserDoesNotExistException;
 import beertech.becks.api.service.PaymentSlipService;
 import beertech.becks.api.tos.request.PaymentSlipTO;
@@ -26,6 +25,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static beertech.becks.api.constants.Constants.*;
 
 @RestController
 @RequestMapping("/payment-slips")
@@ -65,6 +66,7 @@ public class PaymentSlipController {
             value = {
                     @ApiResponse(code = 200, message = STATUS_200_GET_OK),
                     @ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+                    @ApiResponse(code = 409, message = STATUS_409_CONFLICT),
                     @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
             })
     @PostMapping("/code/{paymentSlipCode}")
@@ -80,12 +82,13 @@ public class PaymentSlipController {
       value = {
           @ApiResponse(code = 200, message = STATUS_200_GET_OK),
           @ApiResponse(code = 404, message = STATUS_404_NOT_FOUND),
+          @ApiResponse(code = 409, message = STATUS_409_CONFLICT),
           @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
       })
   @PostMapping
   @ApiOperation(value = "Create a payment slip")
   public ResponseEntity<Void> createPaymentSlip(@RequestBody PaymentSlipTO paymentSlipTO)
-      throws Exception {
+          throws PaymentSlipAlreadyExistsException, AccountDoesNotExistsException, BankDoesNotExistsException, PaymentSlipRegisterException {
     paymentSlipService.decodeAndSave(paymentSlipTO.getCode());
     return new ResponseEntity<>(HttpStatus.OK);
   }
