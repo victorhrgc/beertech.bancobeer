@@ -1,6 +1,6 @@
 package beertech.becks.api.service;
 
-import static beertech.becks.api.constants.ConstantsTests.Hash.HASH_eccbc87e4b5ce2fe28308fd9f2a7baf3;
+import static beertech.becks.api.constants.ConstantsTests.Hash.accountCode2;
 import static beertech.becks.api.constants.ConstantsTests.Values.VALUE_50;
 import static beertech.becks.api.fixture.AccountFixture.aAccountForTestsTransaction;
 import static beertech.becks.api.fixture.AccountFixture.aAccountForTransfer;
@@ -10,10 +10,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import beertech.becks.api.entities.PaymentSlip;
 import beertech.becks.api.model.PaymentCategory;
 import beertech.becks.api.model.TypeOperation;
 import org.junit.Before;
@@ -124,10 +126,22 @@ public class TransactionServiceTest {
         @Test
         public void shouldPostTransactionWithdrawal() throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
 
+            when(accountRepositoryMock.findByCode(currentAccount.getCode())).thenReturn(Optional.of(currentAccount));
+            when(transactionRepositoryMock.save(any())).thenReturn(new Transaction());
+            when(accountRepositoryMock.save(currentAccount)).thenReturn(currentAccount);
+
+            Account accountResponse = transactionServiceMock.createWithdrawal(currentAccount.getCode(), BigDecimal.TEN);
+            assertNotNull(accountResponse);
+            assertEquals(new BigDecimal(40), accountResponse.getBalance());
+        }
+
+        @Test
+        public void shouldPostTransactionTransfer() throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
+
             Account destinationAccount = aAccountForTransfer();
 
             TransferRequestTO transferRequestTO = TransferRequestTO.builder()
-                    .destinationAccountCode(HASH_eccbc87e4b5ce2fe28308fd9f2a7baf3)
+                    .destinationAccountCode(accountCode2)
                     .value(VALUE_50).build();
 
             when(accountRepositoryMock.findByCode(currentAccount.getCode())).thenReturn(Optional.of(currentAccount));
@@ -138,14 +152,54 @@ public class TransactionServiceTest {
 
             Account accountTransfer = transactionServiceMock.createTransfer(currentAccount.getCode(), transferRequestTO, TypeOperation.TRANSFERENCIA, PaymentCategory.OTHERS);
             assertNotNull(accountTransfer);
-            assertEquals(accountTransfer.getBalance(), ZERO);
+            assertEquals(ZERO, accountTransfer.getBalance());
         }
 
         @Test
-        public void shouldPostTransactionTransfer() {
+        public void shouldPostTransactionPayment() throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
 
+            PaymentSlip paymentSlip = PaymentSlip.builder().
+                    code("20201025-005000-EN-001/01234-001/43210").
+                    originAccountCode("01234").
+                    destinationAccountCode("43210").
+                    value(VALUE_50).
+                    category(PaymentCategory.ENTERTAINMENT).
+                    build();
+
+            Account destinationAccount = new Account();
+            destinationAccount.setBalance(ZERO);
+
+            when(accountRepositoryMock.findByCode(paymentSlip.getOriginAccountCode())).thenReturn(Optional.of(currentAccount));
+            when(accountRepositoryMock.findByCode(paymentSlip.getDestinationAccountCode())).thenReturn(Optional.of(destinationAccount));
+            when(transactionRepositoryMock.save(any())).thenReturn(new Transaction());
+            when(accountRepositoryMock.save(currentAccount)).thenReturn(currentAccount);
+            when(accountRepositoryMock.save(destinationAccount)).thenReturn(destinationAccount);
+
+            Account accountResponse = transactionServiceMock.createPayment(paymentSlip);
+            assertNotNull(accountResponse);
+            assertEquals(ZERO, accountResponse.getBalance());
         }
 
+        @Test
+        public void shouldPostTransactionPaymentToExternalBank() throws AccountDoesNotExistsException, AccountDoesNotHaveEnoughBalanceException {
+
+            PaymentSlip paymentSlip = PaymentSlip.builder().
+                    code("20201025-005000-EN-001/01234-002/43210").
+                    originAccountCode("01234").
+                    destinationAccountCode("43210").
+                    value(VALUE_50).
+                    category(PaymentCategory.ENTERTAINMENT).
+                    build();
+
+
+            when(accountRepositoryMock.findByCode(paymentSlip.getOriginAccountCode())).thenReturn(Optional.of(currentAccount));
+            when(transactionRepositoryMock.save(any())).thenReturn(new Transaction());
+            when(accountRepositoryMock.save(currentAccount)).thenReturn(currentAccount);
+
+            Account accountResponse = transactionServiceMock.createPaymentToExternalBank(paymentSlip);
+            assertNotNull(accountResponse);
+            assertEquals(ZERO, accountResponse.getBalance());
+        }
     }
 
 }

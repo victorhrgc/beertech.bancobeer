@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static beertech.becks.api.model.PaymentCategory.OTHERS;
 import static beertech.becks.api.model.TypeOperation.*;
 import static java.time.LocalDateTime.now;
 
