@@ -21,5 +21,5 @@ public class PaymentSlipResponseTO {
 	private PaymentCategory category;
 	private PaymentSlipUserTO originUser;
 	private PaymentSlipUserTO destinationUser;
-
+	private int paid;
 }

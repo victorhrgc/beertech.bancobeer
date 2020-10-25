@@ -6,7 +6,10 @@ import java.util.Optional;
 
 import beertech.becks.api.entities.Account;
 import beertech.becks.api.entities.Bank;
+import beertech.becks.api.exception.bank.BankDoesNotExistsException;
 import beertech.becks.api.exception.payment.PaymentNotDoneException;
+import beertech.becks.api.exception.paymentslip.PaymentSlipAlreadyExistsException;
+import beertech.becks.api.exception.paymentslip.PaymentSlipRegisterException;
 import beertech.becks.api.repositories.AccountRepository;
 import beertech.becks.api.repositories.BankRepository;
 import beertech.becks.api.tos.response.PaymentResponseTO;
@@ -81,12 +84,23 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 				throw new PaymentNotDoneException();
 			}
 		}
+
+		paymentSlip.setPaid(1);
+		paymentSlipRepository.save(paymentSlip);
 	}
 
 	@Override
-	public void decodeAndSave(String code) throws Exception {
-		PaymentSlip paymentSlip = converter.codeToPaymentSlip(code);
-		paymentSlipRepository.save(paymentSlip);
+	public void decodeAndSave(String code) throws PaymentSlipAlreadyExistsException, BankDoesNotExistsException,
+			PaymentSlipRegisterException, AccountDoesNotExistsException {
+		Optional<PaymentSlip> existentSlip = paymentSlipRepository.findByCode(code);
+
+		if (!existentSlip.isPresent()) {
+			PaymentSlip paymentSlip = converter.codeToPaymentSlip(code);
+			paymentSlipRepository.save(paymentSlip);
+			return;
+		}
+
+		throw new PaymentSlipAlreadyExistsException();
 	}
 
 	private List<PaymentSlipResponseTO> convertToPaymentSlipResponseTO(List<PaymentSlip> paymentSlips) {
@@ -116,7 +130,7 @@ public class PaymentSlipServiceImpl implements PaymentSlipService {
 
 			ret.add(PaymentSlipResponseTO.builder().code(slip.getCode()).dueDate(slip.getDueDate())
 					.value(slip.getValue()).id(slip.getId()).originUser(originUser).destinationUser(destinationUser)
-					.category(slip.getCategory()).build());
+					.category(slip.getCategory()).paid(slip.getPaid()).build());
 
 		});
 		return ret;

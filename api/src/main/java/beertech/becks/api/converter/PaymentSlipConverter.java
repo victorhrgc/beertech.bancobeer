@@ -25,45 +25,45 @@ public class PaymentSlipConverter {
   @Autowired
   BankService bankService;
 
-  public PaymentSlip codeToPaymentSlip(String code)
-      throws Exception {
+	public PaymentSlip codeToPaymentSlip(String code)
+			throws BankDoesNotExistsException, PaymentSlipRegisterException, AccountDoesNotExistsException {
 
-    String[] splitedPaymentSlip = decodeSlip(code).split("-");
+		String[] splitedPaymentSlip = new String[0];
+		try {
+			splitedPaymentSlip = decodeSlip(code).split("-");
+		} catch (UnsupportedEncodingException e) {
+			throw new PaymentSlipRegisterException("Couldn't decode the informed code");
+		}
 
-    if(!validatePaymentSlipCode(splitedPaymentSlip)){
-      throw new PaymentSlipRegisterException("Payment slip code is not valid");
-    }
+		if (!validatePaymentSlipCode(splitedPaymentSlip)) {
+			throw new PaymentSlipRegisterException("Payment slip code is not valid");
+		}
 
-    String strDate = splitedPaymentSlip[0];
-    String strValue = splitedPaymentSlip[1];
-    String strCategory = splitedPaymentSlip[2];
-    String[] originBank = splitedPaymentSlip[3].split("/");
-    String[] destinationBank = splitedPaymentSlip[4].split("/");
+		String strDate = splitedPaymentSlip[0];
+		String strValue = splitedPaymentSlip[1];
+		String strCategory = splitedPaymentSlip[2];
+		String[] originBank = splitedPaymentSlip[3].split("/");
+		String[] destinationBank = splitedPaymentSlip[4].split("/");
 
-    LocalDate dueDate = null;
-    try {
-      dueDate = LocalDate.parse(strDate, DateTimeFormatter.BASIC_ISO_DATE);
-    } catch (DateTimeParseException e) {
-      throw new PaymentSlipRegisterException("Date is not valid");
-    }
+		LocalDate dueDate = null;
+		try {
+			dueDate = LocalDate.parse(strDate, DateTimeFormatter.BASIC_ISO_DATE);
+		} catch (DateTimeParseException e) {
+			throw new PaymentSlipRegisterException("Date is not valid");
+		}
 
-    Bank bank = bankService.findByCode(originBank[0]);
+		Bank bank = bankService.findByCode(originBank[0]);
 
-    if(bank.getName().equalsIgnoreCase("BECKS")){
-      return PaymentSlip.builder()
-          .code(code)
-          .dueDate(dueDate)
-          .value(new BigDecimal(strValue).divide(BigDecimal.valueOf(100)))
-          .category(PaymentCategory.getObject(strCategory))
-          .user(accountService.getAccountByCode(originBank[1]).getUser())
-          .originAccountCode(originBank[1])
-          .destinationBankCode(destinationBank[0])
-          .destinationAccountCode(destinationBank[1])
-          .build();
-    }else{
-      throw new PaymentSlipRegisterException("Error on register payment slip");
-    }
-  }
+		if (bank.getName().equalsIgnoreCase("BECKS")) {
+			return PaymentSlip.builder().code(code).dueDate(dueDate)
+					.value(new BigDecimal(strValue).divide(BigDecimal.valueOf(100)))
+					.category(PaymentCategory.getObject(strCategory))
+					.user(accountService.getAccountByCode(originBank[1]).getUser()).originAccountCode(originBank[1])
+					.destinationBankCode(destinationBank[0]).destinationAccountCode(destinationBank[1]).paid(0).build();
+		} else {
+			throw new PaymentSlipRegisterException("Can't register slips for other banks");
+		}
+	}
 
   private static String decodeSlip(String text) throws UnsupportedEncodingException {
     byte[] myBytes = DatatypeConverter.parseHexBinary(text);

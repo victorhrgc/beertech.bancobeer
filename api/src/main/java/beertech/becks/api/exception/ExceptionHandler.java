@@ -37,7 +37,7 @@ public class ExceptionHandler {
 	@org.springframework.web.bind.annotation.ExceptionHandler(AccountAlreadyExistsException.class)
 	public ResponseEntity<ErrorResponseTO> handleAccountAlreadyExistsException(AccountAlreadyExistsException ex) {
 		return new ResponseEntity<>(new ErrorResponseTO("Account with code " + ex.getMessage() + " already exists"),
-				HttpStatus.OK);
+				HttpStatus.CONFLICT);
 	}
 
 	@org.springframework.web.bind.annotation.ExceptionHandler(UserDoesNotExistException.class)
@@ -47,19 +47,19 @@ public class ExceptionHandler {
 
 	@org.springframework.web.bind.annotation.ExceptionHandler(UserAlreadyExistsException.class)
 	public ResponseEntity<ErrorResponseTO> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-		return new ResponseEntity<>(new ErrorResponseTO("User already exists"), HttpStatus.OK);
+		return new ResponseEntity<>(new ErrorResponseTO("User already exists"), HttpStatus.CONFLICT);
 	}
 
 	@org.springframework.web.bind.annotation.ExceptionHandler(AccountDoesNotHaveEnoughBalanceException.class)
 	public ResponseEntity<ErrorResponseTO> handleAccountDoesNotHaveEnoughBalanceException(
 			AccountDoesNotHaveEnoughBalanceException ex) {
-		return new ResponseEntity<>(new ErrorResponseTO("No balance available for transaction"), HttpStatus.OK);
+		return new ResponseEntity<>(new ErrorResponseTO("No balance available for transaction"), HttpStatus.CONFLICT);
 	}
 
 	@org.springframework.web.bind.annotation.ExceptionHandler(BankAlreadyExistsException.class)
 	public ResponseEntity<ErrorResponseTO> handleBankAlreadyExistsException(BankAlreadyExistsException ex) {
 		return new ResponseEntity<>(new ErrorResponseTO("Bank with code " + ex.getMessage() + " already exists"),
-				HttpStatus.OK);
+				HttpStatus.CONFLICT);
 	}
 
 	@org.springframework.web.bind.annotation.ExceptionHandler(BankDoesNotExistsException.class)
@@ -72,7 +72,8 @@ public class ExceptionHandler {
 	public ResponseEntity<ErrorResponseTO> handlePaymentSlipAlreadyExistsException(
 			PaymentSlipAlreadyExistsException ex) {
 		return new ResponseEntity<>(
-				new ErrorResponseTO("Payment slip with code " + ex.getMessage() + " already exists"), HttpStatus.OK);
+				new ErrorResponseTO("Payment slip with code " + ex.getMessage() + " already exists"),
+				HttpStatus.CONFLICT);
 	}
 
 	@org.springframework.web.bind.annotation.ExceptionHandler(PaymentSlipDoesNotExistsException.class)
@@ -89,7 +90,7 @@ public class ExceptionHandler {
 	@org.springframework.web.bind.annotation.ExceptionHandler(PaymentNotDoneException.class)
 	public ResponseEntity<ErrorResponseTO> handlePaymentNotDoneException(PaymentNotDoneException ex) {
 		return new ResponseEntity<>(new ErrorResponseTO("Couldn't execute payment: Error on external system"),
-				HttpStatus.OK);
+				HttpStatus.CONFLICT);
 	}
 
 }

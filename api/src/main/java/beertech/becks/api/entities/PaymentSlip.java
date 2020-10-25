@@ -19,37 +19,37 @@ import java.time.LocalDate;
 @Entity
 public class PaymentSlip implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
 
-    @Column(name = "CODE")
-    private String code;
+	@Column(name = "CODE")
+	private String code;
 
-    @Column(name = "DUE_DATE")
-    private LocalDate dueDate;
+	@Column(name = "DUE_DATE")
+	private LocalDate dueDate;
 
-    @Column(name = "VALUE")
-    private BigDecimal value;
+	@Column(name = "VALUE")
+	private BigDecimal value;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FK_PAYMENT_USER_ID", insertable = true, updatable = false)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private User user;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "FK_PAYMENT_USER_ID", insertable = true, updatable = false)
+	@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+	private User user;
 
-    @Column(name = "ORIGIN_ACCOUNT_CODE")
-    private String originAccountCode;
+	@Column(name = "ORIGIN_ACCOUNT_CODE")
+	private String originAccountCode;
 
-    @Column(name = "DESTINATION_ACCOUNT_CODE")
-    private String destinationAccountCode;
+	@Column(name = "DESTINATION_ACCOUNT_CODE")
+	private String destinationAccountCode;
 
-    @Column(name = "DESTINATION_BANK_CODE")
-    private String destinationBankCode;
+	@Column(name = "DESTINATION_BANK_CODE")
+	private String destinationBankCode;
 
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "CATEGORY")
-    private PaymentCategory category;
+	@Enumerated(EnumType.ORDINAL)
+	@Column(name = "CATEGORY")
+	private PaymentCategory category;
 
-    //@Column(name = "PAYED")
-    //private Integer payed;
+	@Column(name = "PAID")
+	private Integer paid;
 }
