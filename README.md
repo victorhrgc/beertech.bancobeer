@@ -30,17 +30,31 @@ Postgres password: password
   
   # Payments
 
-  - How to create a paymentslip on the database  
+  - How to create a paymentslip on the database  (payment slip)
   
-    POST -> http://localhost:8082/payment-slips
+    POST -> http://localhost:8082/payment-slips or https://beertech-bank-externalbank.herokuapp.com/payment-slips if using Heroku
     {"date":"20201024",  "value":"010200", "origin":"001/conta", "destination":"002/11111", "category":"OT"}
 
     Date:                 yyyyMMdd
     Value:                R$102,00 = 010200 
-    Origin e Destination: Bank(001 ou 002)/Account w/ 5 digits  
+	  Origin e Destination: Bank/Account in which Bank = 001 or 002(External) and Accounts have 5 digits
     Category:             OT / EN / FO / ED / SE
     
-   - When you pay a payment slip, the external bank will return error on even minutes and success on odd minutes (real life time)
+   - To pay a payment slip you need to find the code created on the API database by the above procedure and when you pay it, the external bank will return error on even minutes and success on odd minutes (real life time).
   
   
+  # Heroku
+
+The apps can be found @:
+API:           https://beertech-bank.herokuapp.com/swagger-ui.html#	
+CONSUMER:      https://bonobo.rmq.cloudamqp.com/#/
+EXTERNAL BANK: https://toad.rmq.cloudamqp.com/#/
+
+The logs can be found @:
+API:            https://dashboard.heroku.com/apps/beertech-bank/logs
+CONSUMER:       https://dashboard.heroku.com/apps/beertech-bank-consumer/logs
+EXTERNAL BANK:	https://dashboard.heroku.com/apps/beertech-bank-externalbank/logs
+
+
+
   
