@@ -6,10 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ReactiveHttpOutputMessage;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import beertech.becks.consumer.services.ConsumerService;
@@ -48,7 +47,8 @@ public class ConsumerServiceImpl implements ConsumerService {
 		String completeEndpoint = depositEndpoint.replaceAll("accountCode", message.getAccountCode()) + "?value="
 				+ message.getValue();
 
-		System.out.println(callApi(completeEndpoint, HttpMethod.POST, message.getJwtToken(), null));
+		System.out.println(callApi(completeEndpoint, HttpMethod.POST, message.getJwtToken(), null)
+				.bodyToMono(String.class).block());
 	}
 
 	@Override
@@ -56,7 +56,8 @@ public class ConsumerServiceImpl implements ConsumerService {
 		String completeEndpoint = withdrawalEndpoint.replaceAll("accountCode", message.getAccountCode()) + "?value="
 				+ message.getValue();
 
-		System.out.println(callApi(completeEndpoint, HttpMethod.POST, message.getJwtToken(), null));
+		System.out.println(callApi(completeEndpoint, HttpMethod.POST, message.getJwtToken(), null)
+				.bodyToMono(String.class).block());
 	}
 
 	@Override
@@ -71,27 +72,34 @@ public class ConsumerServiceImpl implements ConsumerService {
 			LOGGER.error("Error converting message to json: " + e.getMessage());
 		}
 
-		System.out.println(callApi(completeEndpoint, HttpMethod.POST, message.getJwtToken(), requestJson));
+		System.out.println(callApi(completeEndpoint, HttpMethod.POST, message.getJwtToken(), requestJson)
+				.bodyToMono(String.class).block());
 	}
 
 	@Override
-	public void treatStatementsMessage(StatementsMessage message) {
+	public String treatStatementsMessage(StatementsMessage message) {
 		String completeEndpoint = statementsEndpoint.replaceAll("accountCode", message.getAccountCode());
 
-		System.out.println(callApi(completeEndpoint, HttpMethod.GET, message.getJwtToken(), null));
+		ClientResponse resp = callApi(completeEndpoint, HttpMethod.GET, message.getJwtToken(), null);
+
+		if (resp.rawStatusCode() == 200) {
+			return "Sucesso";
+		} else {
+			return "Erro";
+		}
 	}
 
-	private String callApi(String completeEndpoint, HttpMethod method, String jwtToken, String jsonBody) {
+	private ClientResponse callApi(String completeEndpoint, HttpMethod method, String jwtToken, String jsonBody) {
 		WebClient client = WebClient.create(completeEndpoint);
 
 		if (jsonBody != null) {
 			return client.method(HttpMethod.POST).body(BodyInserters.fromValue(jsonBody))
 					.header("Authorization", "Bearer " + jwtToken).header("Content-Type", "application/json").exchange()
-					.block().bodyToMono(String.class).block();
+					.block();// .bodyToMono(String.class).block();
 		}
 
-		return client.method(method).header("Authorization", "Bearer " + jwtToken).exchange().block()
-				.bodyToMono(String.class).block();
+		return client.method(method).header("Authorization", "Bearer " + jwtToken).exchange().block();
+		// .bodyToMono(String.class).block();
 	}
 
 }

@@ -14,5 +14,5 @@ public interface ConsumerService {
 
 	void treatTransferMessage(TransferMessage message);
 
-	void treatStatementsMessage(StatementsMessage message);
+	String treatStatementsMessage(StatementsMessage message);
 }
