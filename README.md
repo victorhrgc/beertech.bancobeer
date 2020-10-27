@@ -45,15 +45,15 @@ Postgres password: password
   
   # Heroku
 
-The apps can be found @:
-API:           https://beertech-bank.herokuapp.com/swagger-ui.html#	
-CONSUMER:      https://bonobo.rmq.cloudamqp.com/#/
-EXTERNAL BANK: https://toad.rmq.cloudamqp.com/#/
+The apps can be found @:  
+API:           https://beertech-bank.herokuapp.com/swagger-ui.html#	  
+CONSUMER:      https://bonobo.rmq.cloudamqp.com/#/  
+EXTERNAL BANK: https://toad.rmq.cloudamqp.com/#/  
 
-The logs can be found @:
-API:            https://dashboard.heroku.com/apps/beertech-bank/logs
-CONSUMER:       https://dashboard.heroku.com/apps/beertech-bank-consumer/logs
-EXTERNAL BANK:	https://dashboard.heroku.com/apps/beertech-bank-externalbank/logs
+The logs can be found @:  
+API:            https://dashboard.heroku.com/apps/beertech-bank/logs  
+CONSUMER:       https://dashboard.heroku.com/apps/beertech-bank-consumer/logs  
+EXTERNAL BANK:	https://dashboard.heroku.com/apps/beertech-bank-externalbank/logs  
 
 
 
