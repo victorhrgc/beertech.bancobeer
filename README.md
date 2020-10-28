@@ -57,7 +57,7 @@ EXTERNAL BANK:	https://dashboard.heroku.com/apps/beertech-bank-externalbank/logs
 
 
 # Tests
-WiremockTest.java
+WiremockTest.java  
 Beertech API Tests.postman_collection.json
 
 
