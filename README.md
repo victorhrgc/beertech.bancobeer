@@ -56,5 +56,9 @@ CONSUMER:       https://dashboard.heroku.com/apps/beertech-bank-consumer/logs
 EXTERNAL BANK:	https://dashboard.heroku.com/apps/beertech-bank-externalbank/logs  
 
 
+# Tests
+WiremockTest.java
+Beertech API Tests.postman_collection.json
+
 
   
