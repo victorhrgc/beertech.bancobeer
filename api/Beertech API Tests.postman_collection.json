@@ -1,0 +1,741 @@
+{
+	"info": {
+		"_postman_id": "77ef77e7-b8ec-487d-a0e9-ab9d66e9a94b",
+		"name": "Beertech API Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create User Successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4060365e-ef41-4bba-8c7f-d906915b4fd3",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"document\": \"10\",\r\n  \"email\": \"10\",\r\n  \"name\": \"10\",\r\n  \"password\": \"10\",\r\n  \"role\": \"ADMIN\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Bank Successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e4be9fcf-f2d5-4e36-9982-3bd1a0b86a6f",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"code\": \"003\",\r\n  \"name\": \"Outro banco\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/banks",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"banks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create User Unsuccessfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "36ef9e6f-8840-44bf-9a05-fed6cabefcc0",
+						"exec": [
+							"pm.test(\"Status code is 409\", function () {\r",
+							"    pm.response.to.have.status(409);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"document\": \"1\",\r\n  \"email\": \"1\",\r\n  \"name\": \"1\",\r\n  \"password\": \"1\",\r\n  \"role\": \"ADMIN\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a0a4a8f4-7c2a-49f0-9909-8fcf20a25e6f",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Contains token\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"token\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"10\",\r\n  \"password\": \"10\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/login/authentication",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login",
+						"authentication"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Unsuccessfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "34d5f5f0-6cc7-404c-b813-6bc699df7f8e",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Contains errorMessage\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"errorMessage\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"13213210\",\r\n  \"password\": \"13213210\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/login/authentication",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login",
+						"authentication"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all accounts successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "292f2ce9-ad24-4e04-b021-8e460ca96152",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Returned accounts\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.length).to.be.greaterThan(0)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/accounts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get balance successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8d67f89c-bb2b-4f3b-a91b-6a2e7f52da27",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Balance is 50\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.balance).to.be.equal(50);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWQiOjYzLCJkb2N1bWVudE51bWJlciI6IjEiLCJhdXRoIjoiQURNSU4iLCJuYW1lIjoiMSIsImV4cCI6MTYwNDAyODU5NH0.Qesl3zv4vbeJ3b9YmPFrbyXOMHWOFXdqTXqY5A2Ys31KWg2A_bj_QmI-II6T5-aSgbqwxb841aDzGMCVCaL66w"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/accounts/1/balance",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"accounts",
+						"1",
+						"balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Balance Unsuccessfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f3fcfd2e-79bd-451c-8050-92ba606f2a19",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Contains errorMessage\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"errorMessage\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWQiOjYzLCJkb2N1bWVudE51bWJlciI6IjEiLCJhdXRoIjoiQURNSU4iLCJuYW1lIjoiMSIsImV4cCI6MTYwNDAyODU5NH0.Qesl3zv4vbeJ3b9YmPFrbyXOMHWOFXdqTXqY5A2Ys31KWg2A_bj_QmI-II6T5-aSgbqwxb841aDzGMCVCaL66w"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/accounts/321321321/balance",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"accounts",
+						"321321321",
+						"balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get account by code successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e4069e5e-fbab-4511-a2f9-b50a5f43a837",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Contains id\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWQiOjYzLCJkb2N1bWVudE51bWJlciI6IjEiLCJhdXRoIjoiQURNSU4iLCJuYW1lIjoiMSIsImV4cCI6MTYwNDAyODU5NH0.Qesl3zv4vbeJ3b9YmPFrbyXOMHWOFXdqTXqY5A2Ys31KWg2A_bj_QmI-II6T5-aSgbqwxb841aDzGMCVCaL66w"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/accounts/code/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"accounts",
+						"code",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get account by code unsuccessfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "88392ee0-8792-4097-b6bb-ac69a9e106e2",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Contains errorMessage\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"errorMessage\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWQiOjYzLCJkb2N1bWVudE51bWJlciI6IjEiLCJhdXRoIjoiQURNSU4iLCJuYW1lIjoiMSIsImV4cCI6MTYwNDAyODU5NH0.Qesl3zv4vbeJ3b9YmPFrbyXOMHWOFXdqTXqY5A2Ys31KWg2A_bj_QmI-II6T5-aSgbqwxb841aDzGMCVCaL66w"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/accounts/code/13321321321",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"accounts",
+						"code",
+						"13321321321"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get accounts by id successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2678a6f5-bfe9-4ac3-9ca9-37648c3dec28",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Contains id\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWQiOjYzLCJkb2N1bWVudE51bWJlciI6IjEiLCJhdXRoIjoiQURNSU4iLCJuYW1lIjoiMSIsImV4cCI6MTYwNDAyODU5NH0.Qesl3zv4vbeJ3b9YmPFrbyXOMHWOFXdqTXqY5A2Ys31KWg2A_bj_QmI-II6T5-aSgbqwxb841aDzGMCVCaL66w"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/accounts/id/66",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"accounts",
+						"id",
+						"66"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get account by id unsuccessfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "04f132f9-f168-410a-8972-e2fead539cf5",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Contains errorMessage\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"errorMessage\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWQiOjYzLCJkb2N1bWVudE51bWJlciI6IjEiLCJhdXRoIjoiQURNSU4iLCJuYW1lIjoiMSIsImV4cCI6MTYwNDAyODU5NH0.Qesl3zv4vbeJ3b9YmPFrbyXOMHWOFXdqTXqY5A2Ys31KWg2A_bj_QmI-II6T5-aSgbqwxb841aDzGMCVCaL66w"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/accounts/id/66321321",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"accounts",
+						"id",
+						"66321321"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get account by user id successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "302851b9-cc48-4b3e-bc13-dd7572c9b6b0",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Returned accounts\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.length).to.be.greaterThan(0)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWQiOjYzLCJkb2N1bWVudE51bWJlciI6IjEiLCJhdXRoIjoiQURNSU4iLCJuYW1lIjoiMSIsImV4cCI6MTYwNDAyODU5NH0.Qesl3zv4vbeJ3b9YmPFrbyXOMHWOFXdqTXqY5A2Ys31KWg2A_bj_QmI-II6T5-aSgbqwxb841aDzGMCVCaL66w"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/accounts/user/63",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"accounts",
+						"user",
+						"63"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get account by user id unsuccessfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "eacd8669-778d-4d9a-8aed-6cfee35a3cfe",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Contains errorMessage\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"errorMessage\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWQiOjYzLCJkb2N1bWVudE51bWJlciI6IjEiLCJhdXRoIjoiQURNSU4iLCJuYW1lIjoiMSIsImV4cCI6MTYwNDAyODU5NH0.Qesl3zv4vbeJ3b9YmPFrbyXOMHWOFXdqTXqY5A2Ys31KWg2A_bj_QmI-II6T5-aSgbqwxb841aDzGMCVCaL66w"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/accounts/user/63321321321",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"accounts",
+						"user",
+						"63321321321"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all banks successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4f49826a-0f8d-4bdf-b4e0-77bdca13e0fb",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Returned accounts\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.length).to.be.greaterThan(0)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWQiOjYzLCJkb2N1bWVudE51bWJlciI6IjEiLCJhdXRoIjoiQURNSU4iLCJuYW1lIjoiMSIsImV4cCI6MTYwNDAyODU5NH0.Qesl3zv4vbeJ3b9YmPFrbyXOMHWOFXdqTXqY5A2Ys31KWg2A_bj_QmI-II6T5-aSgbqwxb841aDzGMCVCaL66w"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/banks",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"banks"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWQiOjYzLCJkb2N1bWVudE51bWJlciI6IjEiLCJhdXRoIjoiQURNSU4iLCJuYW1lIjoiMSIsImV4cCI6MTYwNDAyMjM1N30.DYYTHXrg1fv8DdLs9K3FCvVipWT2rSJ30n6NaAQGZshKz2upKoPzaAGShJ48fIararxUPdbiKJvyBUXBFOJhrw",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "b1c03ef1-f35f-42ff-a340-e748abc7b117",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "498d2280-c2b3-45c8-a1ff-186c7d139664",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
